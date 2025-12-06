@@ -16,21 +16,26 @@ export default function SuttaReader({ text, onClose, currentTime = 0, duration =
     const [activeTab, setActiveTab] = useState<"pali" | "myanmar">("pali");
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
+    const [isAutoScroll, setIsAutoScroll] = useState(true);
+    const [scrollSpeed, setScrollSpeed] = useState(1);
 
     const content = activeTab === "pali" ? text.pali : text.myanmar;
 
     useEffect(() => {
         if (!scrollContainerRef.current || !contentRef.current) return;
+        if (!isAutoScroll) return;
 
         const config = text.config || { scrollStart: 0, scrollDuration: duration };
         const scrollStart = config.scrollStart || 0;
-        const totalDuration = config.scrollDuration || duration;
+        const baseDuration = config.scrollDuration || duration;
+
+        // Adjust duration based on speed (higher speed = lower duration)
+        const effectiveDuration = Math.max(1, baseDuration / scrollSpeed);
 
         // Only scroll if we are participating in the scrolling window
         if (currentTime < scrollStart) return;
 
         const activeTime = currentTime - scrollStart;
-        const effectiveDuration = Math.max(1, totalDuration - scrollStart);
         const progress = Math.min(1, Math.max(0, activeTime / effectiveDuration));
 
         const containerHeight = scrollContainerRef.current.clientHeight;
@@ -39,16 +44,22 @@ export default function SuttaReader({ text, onClose, currentTime = 0, duration =
 
         if (maxScroll > 0) {
             const targetScroll = maxScroll * progress;
-            // Smoothly update scroll position (direct assignment is usually fine for linear updates)
             scrollContainerRef.current.scrollTop = targetScroll;
         }
 
-    }, [currentTime, duration, text.config]);
+    }, [currentTime, duration, text.config, isAutoScroll, scrollSpeed]);
+
+    const handleSpeedClick = () => {
+        const speeds = [0.5, 1, 2, 5];
+        const currentIndex = speeds.indexOf(scrollSpeed);
+        const nextIndex = (currentIndex + 1) % speeds.length;
+        setScrollSpeed(speeds[nextIndex]);
+    };
 
     return (
         <div className="flex flex-col h-full bg-black/95 backdrop-blur-2xl overflow-hidden">
             {/* Header / Tabs */}
-            <div className="flex items-center justify-between p-4 border-b border-white/10 bg-black/20">
+            <div className="flex items-center justify-between p-4 border-b border-white/10 bg-black/20 z-10">
                 <div className="flex bg-black/40 rounded-lg p-1">
                     <button
                         onClick={() => setActiveTab("pali")}
@@ -76,12 +87,28 @@ export default function SuttaReader({ text, onClose, currentTime = 0, duration =
                     </button>
                 </div>
 
-                {onClose && (
-                    <button onClick={onClose} className="text-white/40 hover:text-white p-2 rounded-full hover:bg-white/10 transition-all">
-                        <span className="sr-only">Close</span>
-                        <ChevronDown size={24} />
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setIsAutoScroll(!isAutoScroll)}
+                        className={`px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider border transition-all ${isAutoScroll ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-white/5 text-white/40 border-white/10 hover:bg-white/10"}`}
+                    >
+                        {isAutoScroll ? "Auto: On" : "Auto: Off"}
                     </button>
-                )}
+
+                    <button
+                        onClick={handleSpeedClick}
+                        className="px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider bg-white/5 text-orange-200/80 border border-white/10 hover:bg-white/10 transition-all w-[4.5rem]"
+                    >
+                        {scrollSpeed}x
+                    </button>
+
+                    {onClose && (
+                        <button onClick={onClose} className="text-white/40 hover:text-white p-2 rounded-full hover:bg-white/10 transition-all ml-2">
+                            <span className="sr-only">Close</span>
+                            <ChevronDown size={24} />
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Content */}
@@ -96,7 +123,7 @@ export default function SuttaReader({ text, onClose, currentTime = 0, duration =
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        className="text-lg leading-loose text-orange-50 font-serif text-center whitespace-pre-wrap pb-[50vh]"
+                        className="text-lg leading-loose text-orange-50 font-serif text-center whitespace-pre-wrap pb-[50vh] pt-10"
                         ref={contentRef}
                     >
                         {content as string}
