@@ -8,14 +8,20 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Paritta Pali - Myanmar Buddhist Prayers",
-  description: "Listen to the 11 major Paritta Suttas in Pali.",
-};
-
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
+  title: "Paritta Pali",
+  description: "Buddhist Chanting Companion",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Paritta Pali",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false, // Often desirable for app-like feel
+  },
 };
 
 export default function RootLayout({
