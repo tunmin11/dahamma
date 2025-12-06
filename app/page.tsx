@@ -84,10 +84,9 @@ export default function Home() {
             animate={{ y: "0%" }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-40 pt-16 px-0 md:px-0 flex flex-col items-center justify-end"
+            className="fixed inset-0 z-40 flex flex-col"
           >
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsReaderOpen(false)} />
-            <div className="w-full max-w-2xl h-[85vh] relative z-50">
+            <div className="w-full h-full relative z-50">
               <SuttaReader
                 text={getSuttaText(currentSutta.id)}
                 onClose={() => setIsReaderOpen(false)}

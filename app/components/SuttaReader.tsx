@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 import { SuttaText } from "../data/sutta-texts";
 
 interface SuttaReaderProps {
@@ -45,7 +46,7 @@ export default function SuttaReader({ text, onClose, currentTime = 0, duration =
     }, [currentTime, duration, text.config]);
 
     return (
-        <div className="flex flex-col h-full bg-black/40 backdrop-blur-xl rounded-t-3xl border-t border-white/10 shadow-2xl overflow-hidden">
+        <div className="flex flex-col h-full bg-black/95 backdrop-blur-2xl overflow-hidden">
             {/* Header / Tabs */}
             <div className="flex items-center justify-between p-4 border-b border-white/10 bg-black/20">
                 <div className="flex bg-black/40 rounded-lg p-1">
@@ -76,9 +77,9 @@ export default function SuttaReader({ text, onClose, currentTime = 0, duration =
                 </div>
 
                 {onClose && (
-                    <button onClick={onClose} className="text-white/40 hover:text-white p-2">
+                    <button onClick={onClose} className="text-white/40 hover:text-white p-2 rounded-full hover:bg-white/10 transition-all">
                         <span className="sr-only">Close</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <ChevronDown size={24} />
                     </button>
                 )}
             </div>
