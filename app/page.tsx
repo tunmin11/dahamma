@@ -5,6 +5,7 @@ import { suttas, Sutta } from "./data/suttas";
 import SuttaList from "./components/SuttaList";
 import AudioPlayer from "./components/AudioPlayer";
 import SuttaReader from "./components/SuttaReader";
+import InstallPrompt from "./components/InstallPrompt";
 import { getSuttaText } from "./data/sutta-texts";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronUp } from "lucide-react";
@@ -108,6 +109,7 @@ export default function Home() {
         isReaderOpen={isReaderOpen}
         onTimeUpdate={(t, d) => { setCurrentTime(t); setDuration(d); }}
       />
+      <InstallPrompt />
     </div>
   );
 }
