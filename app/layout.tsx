@@ -22,6 +22,9 @@ export const metadata: Metadata = {
     maximumScale: 1,
     userScalable: false, // Often desirable for app-like feel
   },
+  icons: {
+    apple: "/icons/icon-192x192.png",
+  },
 };
 
 export default function RootLayout({

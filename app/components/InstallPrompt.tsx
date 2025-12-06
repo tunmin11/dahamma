@@ -1,0 +1,73 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Share, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
+export default function InstallPrompt() {
+    const [isIOS, setIsIOS] = useState(false);
+    const [isStandalone, setIsStandalone] = useState(false);
+    const [showPrompt, setShowPrompt] = useState(false);
+
+    useEffect(() => {
+        // Detect iOS
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
+
+        // Detect Standalone (PWA mode)
+        const isStandaloneMode =
+            window.matchMedia("(display-mode: standalone)").matches ||
+            (window.navigator as any).standalone === true;
+
+        setIsIOS(isIosDevice);
+        setIsStandalone(isStandaloneMode);
+
+        // Show prompt only on iOS and NOT in standalone mode
+        // Add a small delay so it doesn't pop up instantly
+        if (isIosDevice && !isStandaloneMode) {
+            const timer = setTimeout(() => {
+                setShowPrompt(true);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, []);
+
+    if (!showPrompt) return null;
+
+    return (
+        <AnimatePresence>
+            <motion.div
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0 }}
+                className="fixed bottom-4 left-4 right-4 z-50 bg-black/80 backdrop-blur-md border border-orange-500/30 rounded-2xl p-4 shadow-2xl text-white"
+            >
+                <button
+                    onClick={() => setShowPrompt(false)}
+                    className="absolute top-2 right-2 text-white/40 hover:text-white"
+                >
+                    <X size={20} />
+                </button>
+
+                <div className="flex flex-col gap-3 pr-6">
+                    <h3 className="font-bold text-orange-400">Install App</h3>
+                    <p className="text-sm text-gray-200">
+                        Install this app on your iPhone for the best experience.
+                    </p>
+                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                        <span>1. Tap</span>
+                        <Share size={18} className="text-blue-400" />
+                        <span>in the toolbar</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                        <span>2. Select</span>
+                        <span className="font-bold text-white bg-white/20 px-2 py-0.5 rounded">Add to Home Screen</span>
+                    </div>
+                </div>
+
+                {/* Pointing Arrow (Optional visual cue) */}
+                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4 h-4 bg-black/80 rotate-45 border-r border-b border-orange-500/30 hidden sm:block"></div>
+            </motion.div>
+        </AnimatePresence>
+    );
+}
