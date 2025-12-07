@@ -1,114 +1,99 @@
 "use client";
 
-import { useState } from "react";
-import { suttas, Sutta } from "./data/suttas";
-import SuttaList from "./components/SuttaList";
-import AudioPlayer from "./components/AudioPlayer";
-import SuttaReader from "./components/SuttaReader";
+import Link from "next/link";
+import { motion } from "framer-motion";
 import InstallPrompt from "./components/InstallPrompt";
-import { getSuttaText } from "./data/sutta-texts";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronUp } from "lucide-react";
 
 export default function Home() {
-  const [currentSutta, setCurrentSutta] = useState<Sutta | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isReaderOpen, setIsReaderOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-
-  // Auto-open reader when playing a different sutta? optional.
-  // For now let user toggle it.
-
-  const handleSelectSutta = (sutta: Sutta) => {
-    if (currentSutta?.id === sutta.id) {
-      setIsPlaying(!isPlaying);
-    } else {
-      setCurrentSutta(sutta);
-      setIsPlaying(true);
-      setCurrentTime(0); // Reset time for new track
-    }
-  };
-
-  const handleNext = () => {
-    if (!currentSutta) return;
-    const currentIndex = suttas.findIndex((s) => s.id === currentSutta.id);
-    const nextIndex = (currentIndex + 1) % suttas.length;
-    setCurrentSutta(suttas[nextIndex]);
-    setIsPlaying(true);
-    setCurrentTime(0);
-  };
-
-  const handlePrev = () => {
-    if (!currentSutta) return;
-    const currentIndex = suttas.findIndex((s) => s.id === currentSutta.id);
-    const prevIndex = (currentIndex - 1 + suttas.length) % suttas.length;
-    setCurrentSutta(suttas[prevIndex]);
-    setIsPlaying(true);
-    setCurrentTime(0);
-  };
-
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
+  const books = [
+    {
+      id: "paritta",
+      href: "/paritta",
+      title: "Paritta Pali",
+      subtitle: "The 11 Major Suttas",
+      nativeTitle: "ပရိတ်ကြီး ၁၁ သုတ်",
+      color: "from-orange-500 to-amber-600",
+      coverImage: "/covers/paritta.png",
+    },
+    // Future books can be added here
+  ];
 
   return (
-    <div className="min-h-screen text-white p-4 sm:p-6 md:p-8 max-w-2xl mx-auto">
+    <div className="min-h-screen text-white p-6 md:p-8 max-w-4xl mx-auto flex flex-col">
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="mb-8 pt-8 text-center"
+        className="mt-8 mb-12 text-center"
       >
-        <span className="text-xs font-bold tracking-[0.2em] text-orange-200/60 uppercase">
-          Myanmar Recitation
+        <span className="text-xs font-bold tracking-[0.3em] text-orange-200/60 uppercase">
+          Sayadaw U Vicittasarabhivamsa
         </span>
-        <h1 className="text-3xl font-bold mt-2 bg-gradient-to-r from-orange-100 to-orange-50 bg-clip-text text-transparent">
-          Paritta Pali
+        <h1 className="text-4xl md:text-5xl font-bold mt-3 bg-gradient-to-br from-orange-100 via-orange-50 to-amber-100 bg-clip-text text-transparent">
+          Dhamma Library
         </h1>
-        <div className="h-1 w-12 bg-orange-300/30 mx-auto mt-4 rounded-full" />
+        <p className="text-white/40 mt-4 text-sm font-light tracking-wide">
+          A Collection of Theravada Chants & Texts
+        </p>
       </motion.header>
 
-      <main className="pb-32">
-        <SuttaList
-          suttas={suttas}
-          currentSutta={currentSutta}
-          isPlaying={isPlaying}
-          onSelect={handleSelectSutta}
-        />
+      <main className="flex-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {books.map((book, index) => (
+            <Link key={book.id} href={book.href}>
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="group relative bg-transparent rounded-2xl flex flex-col items-center"
+              >
+
+                {/* Book Cover Container */}
+                <div className="relative w-48 aspect-[2/3] md:w-56 shadow-xl rounded-r-lg rounded-l-sm transition-all duration-300 group-hover:shadow-2xl">
+                  {/* Spine Effect */}
+                  <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-black/20 to-transparent z-10 rounded-l-sm" />
+
+                  {/* Cover Image */}
+                  <img
+                    src={book.coverImage}
+                    alt={book.title}
+                    className="w-full h-full object-cover rounded-r-lg rounded-l-sm"
+                  />
+
+                  {/* Shine/Lighting */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/0 via-white/5 to-white/10 rounded-r-lg pointer-events-none" />
+                </div>
+
+                {/* Metadata below book */}
+                <div className="mt-6 text-center">
+                  <h2 className="text-xl font-bold text-white mb-1 group-hover:text-amber-100 transition-colors">
+                    {book.nativeTitle}
+                  </h2>
+                  <p className="text-sm text-orange-200/80 font-medium">
+                    {book.title}
+                  </p>
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+
+          {/* Spacer / Coming Soon Placeholder */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="opacity-20 flex flex-col items-center justify-center text-center h-full min-h-[160px]"
+          >
+            <span className="text-white/40 text-sm font-medium"></span>
+          </motion.div>
+        </div>
       </main>
 
-      {/* Reader Overlay */}
-      <AnimatePresence>
-        {isReaderOpen && currentSutta && (
-          <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: "0%" }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-40 flex flex-col"
-          >
-            <div className="w-full h-full relative z-50">
-              <SuttaReader
-                text={getSuttaText(currentSutta.id)}
-                onClose={() => setIsReaderOpen(false)}
-                currentTime={currentTime}
-                duration={duration}
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <footer className="mt-16 text-center text-white/20 text-xs py-8">
+        <p>© {new Date().getFullYear()} Dhamma Project</p>
+      </footer>
 
-      <AudioPlayer
-        currentSutta={currentSutta}
-        isPlaying={isPlaying}
-        onNext={handleNext}
-        onPrev={handlePrev}
-        onPlayPause={handlePlayPause}
-        onToggleReader={() => setIsReaderOpen(!isReaderOpen)}
-        isReaderOpen={isReaderOpen}
-        onTimeUpdate={(t, d) => { setCurrentTime(t); setDuration(d); }}
-      />
       <InstallPrompt />
     </div>
   );
