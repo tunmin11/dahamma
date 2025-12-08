@@ -19,19 +19,19 @@ export default function LibraryPage() {
     ];
 
     return (
-        <div className="min-h-screen text-white p-6 md:p-8 max-w-6xl mx-auto flex flex-col">
+        <div className="min-h-screen text-gray-800 p-6 md:p-8 max-w-6xl mx-auto flex flex-col">
             <motion.header
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 className="mt-4 mb-8 text-center relative"
             >
-                <Link href="/" className="absolute left-0 top-2 text-white/50 hover:text-white transition-colors">
+                <Link href="/" className="absolute left-0 top-2 text-gray-400 hover:text-black transition-colors">
                     <ChevronLeft size={24} />
                 </Link>
-                <span className="text-xs font-bold tracking-[0.3em] text-orange-200/60 uppercase">
+                <span className="text-xs font-bold tracking-[0.3em] text-orange-900/60 uppercase">
                     Archive
                 </span>
-                <h1 className="text-3xl md:text-4xl font-bold mt-2 bg-gradient-to-br from-orange-100 via-orange-50 to-amber-100 bg-clip-text text-transparent">
+                <h1 className="text-3xl md:text-4xl font-bold mt-2 bg-gradient-to-br from-orange-800 via-orange-700 to-amber-800 bg-clip-text text-transparent">
                     Dhamma Library
                 </h1>
             </motion.header>
@@ -66,10 +66,10 @@ export default function LibraryPage() {
 
                                 {/* Metadata below book */}
                                 <div className="mt-6 text-center">
-                                    <h2 className="text-xl font-bold text-white mb-1 group-hover:text-amber-100 transition-colors">
+                                    <h2 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-amber-800 transition-colors">
                                         {book.nativeTitle}
                                     </h2>
-                                    <p className="text-sm text-orange-200/80 font-medium">
+                                    <p className="text-sm text-gray-500 font-medium">
                                         {book.title}
                                     </p>
                                 </div>
@@ -82,9 +82,9 @@ export default function LibraryPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 }}
-                        className="opacity-20 flex flex-col items-center justify-center text-center w-48 aspect-[2/3] md:w-56 border border-white/20 rounded-lg"
+                        className="flex flex-col items-center justify-center text-center w-48 aspect-[2/3] md:w-56 border border-gray-300 rounded-lg bg-gray-50"
                     >
-                        <span className="text-white/40 text-sm font-medium">Coming Soon</span>
+                        <span className="text-gray-400 text-sm font-medium">Coming Soon</span>
                     </motion.div>
                 </div>
             </main>

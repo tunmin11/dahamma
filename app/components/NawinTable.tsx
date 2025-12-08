@@ -88,20 +88,20 @@ export default function NawinTable() {
     // Setup Screen
     if (isClient && !startDate) {
         return (
-            <div className="w-full max-w-md mx-auto bg-white/5 border border-white/10 rounded-2xl p-8 text-center backdrop-blur-sm">
-                <div className="w-16 h-16 mx-auto bg-blue-500/20 rounded-full flex items-center justify-center mb-6 text-blue-200">
+            <div className="w-full max-w-md mx-auto bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-md mt-10">
+                <div className="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-6 text-blue-600">
                     <Calendar size={32} />
                 </div>
-                <h2 className="text-xl font-bold text-white mb-2">Begin Your Journey</h2>
-                <p className="text-white/60 text-sm mb-8">
+                <h2 className="text-xl font-bold text-gray-800 mb-2">Begin Your Journey</h2>
+                <p className="text-gray-500 text-sm mb-8">
                     The Ko Nawin ritual must begin on a <strong>Monday</strong>. Please select your start date below.
                 </p>
                 <input
                     type="date"
-                    className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white mb-6 w-full text-center focus:outline-none focus:border-blue-500 transition-colors"
+                    className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-800 mb-6 w-full text-center focus:outline-none focus:border-blue-500 transition-colors"
                     onChange={(e) => handleStartSetup(e.target.value)}
                 />
-                <p className="text-xs text-white/30">
+                <p className="text-xs text-gray-400">
                     Choose a Monday to enable the 'Start' button
                 </p>
             </div>
@@ -120,9 +120,9 @@ export default function NawinTable() {
             </div>
 
             <div className="w-full overflow-x-auto pb-12">
-                <div className="min-w-[900px] bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-sm">
+                <div className="min-w-[900px] bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                     {/* Header Row */}
-                    <div className="grid grid-cols-10 gap-2 mb-4 text-center font-bold text-white/40 text-xs uppercase tracking-wider">
+                    <div className="grid grid-cols-10 gap-2 mb-4 text-center font-bold text-gray-500 text-xs uppercase tracking-wider">
                         <div className="text-left pl-2">Attribute</div>
                         {[...Array(9)].map((_, i) => (
                             <div key={i}>Day {i + 1}</div>
@@ -133,9 +133,9 @@ export default function NawinTable() {
                     {nawinAttributes.map((attr) => (
                         <div key={attr.id} className="grid grid-cols-10 gap-2 mb-3 items-stretch">
                             {/* Row Label */}
-                            <div className="font-bold text-white/80 text-sm pl-2 flex flex-col justify-center">
+                            <div className="font-bold text-gray-800 text-sm pl-2 flex flex-col justify-center">
                                 <span className="truncate" title={attr.meaning}>{attr.pali}</span>
-                                <span className="text-[10px] text-white/30 font-normal">Level {attr.id}</span>
+                                <span className="text-[10px] text-gray-400 font-normal">Level {attr.id}</span>
                             </div>
 
                             {/* Cells */}
@@ -156,10 +156,10 @@ export default function NawinTable() {
                                         className={`
                         aspect-square rounded-md flex flex-col items-center justify-center border transition-all relative
                         ${isDone
-                                                ? "bg-green-500/20 border-green-500/50 text-green-400"
+                                                ? "bg-green-100 border-green-500 text-green-700"
                                                 : isUnlocked
-                                                    ? "bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/40 cursor-pointer"
-                                                    : "bg-black/20 border-white/5 text-white/10 cursor-not-allowed"
+                                                    ? "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300 cursor-pointer"
+                                                    : "bg-gray-100 border-gray-100 text-gray-300 cursor-not-allowed"
                                             }
                     `}
                                     >

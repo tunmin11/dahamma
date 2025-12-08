@@ -28,16 +28,16 @@ export default function SuttaList({ suttas, currentSutta, isPlaying, onSelect }:
               relative overflow-hidden group cursor-pointer
               p-4 rounded-2xl border transition-all duration-300
               ${isCurrent
-                                ? "bg-white/20 border-white/30 shadow-lg"
-                                : "bg-white/5 border-white/10 hover:bg-white/10"
+                                ? "bg-white border-orange-200 shadow-md ring-1 ring-orange-100"
+                                : "bg-white border-gray-200 hover:border-orange-200 hover:shadow-sm"
                             }
             `}
                     >
                         <div className="flex items-center justify-between relative z-10">
                             <div className="flex items-center gap-4">
                                 <div className={`
-                  w-10 h-10 rounded-full flex items-center justify-center
-                  ${isCurrent ? "bg-white text-orange-900" : "bg-white/10 text-white/50"}
+                  w-10 h-10 rounded-full flex items-center justify-center transition-colors
+                  ${isCurrent ? "bg-orange-100 text-orange-600" : "bg-gray-100 text-gray-400"}
                 `}>
                                     {isCurrent && isPlaying ? (
                                         <Pause size={16} fill="currentColor" />
@@ -46,10 +46,10 @@ export default function SuttaList({ suttas, currentSutta, isPlaying, onSelect }:
                                     )}
                                 </div>
                                 <div>
-                                    <h3 className={`font-semibold ${isCurrent ? "text-white" : "text-white/80"}`}>
+                                    <h3 className={`font-semibold ${isCurrent ? "text-gray-900" : "text-gray-600"}`}>
                                         {sutta.title}
                                     </h3>
-                                    <p className="text-xs text-white/40 mt-0.5">MP3 Audio</p>
+                                    <p className="text-xs text-gray-400 mt-0.5"></p>
                                 </div>
                             </div>
 
@@ -61,7 +61,7 @@ export default function SuttaList({ suttas, currentSutta, isPlaying, onSelect }:
                                                 key={i}
                                                 animate={{ height: isPlaying ? [4, 16, 8, 12, 4] : 4 }}
                                                 transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.1 }}
-                                                className="w-1 bg-white rounded-full"
+                                                className="w-1 bg-orange-400 rounded-full"
                                             />
                                         ))}
                                     </div>

@@ -54,22 +54,22 @@ export default function ParittaPage() {
     };
 
     return (
-        <div className="min-h-screen text-white p-4 sm:p-6 md:p-8 max-w-2xl mx-auto">
+        <div className="min-h-screen text-gray-800 p-4 sm:p-6 md:p-8 max-w-2xl mx-auto">
             <motion.header
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 className="mb-8 pt-4 text-center relative"
             >
-                <Link href="/" className="absolute left-0 top-6 text-white/50 hover:text-white transition-colors">
+                <Link href="/" className="absolute left-0 top-6 text-gray-400 hover:text-black transition-colors">
                     <ChevronLeft size={24} />
                 </Link>
-                <span className="text-xs font-bold tracking-[0.2em] text-orange-200/60 uppercase">
+                <span className="text-xs font-bold tracking-[0.2em] text-orange-900/60 uppercase">
                     Myanmar Recitation
                 </span>
-                <h1 className="text-3xl font-bold mt-2 bg-gradient-to-r from-orange-100 to-orange-50 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold mt-2 bg-gradient-to-r from-orange-800 to-amber-700 bg-clip-text text-transparent">
                     Paritta Pali
                 </h1>
-                <div className="h-1 w-12 bg-orange-300/30 mx-auto mt-4 rounded-full" />
+                <div className="h-1 w-12 bg-orange-200 mx-auto mt-4 rounded-full" />
             </motion.header>
 
             <main className="pb-32">
