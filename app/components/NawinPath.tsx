@@ -54,14 +54,19 @@ export default function NawinPath() {
                             localStorage.setItem("nawin_startDate", data.nawinStartDate);
                         }
                     } else {
-                        // If no cloud data, init with local
-                        // But wait, if we have local data we should push it? 
-                        // Let's do that in the "save" actions to avoid race conditions or overwriting empty cloud on fresh login?
-                        // Actually, if it's a new user doc, we can push local state.
-                        if (completedCells.length > 0 || startDate) {
+                        // Init cloud if empty
+                        // Check state first, then fallback to local storage to be sure
+                        const localCompleted = completedCells.length > 0
+                            ? completedCells
+                            : JSON.parse(localStorage.getItem("nawin_completedCells") || "[]");
+
+                        const localDate = startDate || localStorage.getItem("nawin_startDate");
+
+                        if (localCompleted.length > 0 || localDate) {
+                            console.log("☁️ Initializing cloud with local data...");
                             await setDoc(docRef, {
-                                nawinCompleted: completedCells,
-                                nawinStartDate: startDate,
+                                nawinCompleted: localCompleted,
+                                nawinStartDate: localDate,
                                 updatedAt: new Date()
                             }, { merge: true });
                         }
@@ -416,6 +421,32 @@ export default function NawinPath() {
                     <button onClick={resetProgress} className="text-gray-400 text-xs hover:text-red-500 font-medium">
                         Reset
                     </button>
+
+                    {/* Debug Button */}
+                    <button
+                        onClick={async () => {
+                            if (!user) {
+                                alert("Not logged in!");
+                                return;
+                            }
+                            try {
+                                setSyncStatus('syncing');
+                                await setDoc(doc(db, "users", user.uid), {
+                                    lastTest: new Date(),
+                                    email: user.email // Save email to verify it's the right user
+                                }, { merge: true });
+                                alert("Connection Successful! Data written to Firestore.");
+                                setSyncStatus('success');
+                            } catch (e: any) {
+                                alert(`Connection Failed: ${e.message}`);
+                                setSyncStatus('error');
+                                console.error(e);
+                            }
+                        }}
+                        className="ml-2 px-2 py-1 bg-gray-100 rounded text-[10px] text-gray-500 hover:bg-gray-200"
+                    >
+                        Test Cloud
+                    </button>
                 </div>
             </div>
 
@@ -442,20 +473,26 @@ export default function NawinPath() {
                         {/* The Path Container */}
                         <div className="relative mx-auto max-w-md h-[750px]">
                             {/* SVG Line Background */}
-                            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ overflow: 'visible' }}>
+                            <svg
+                                className="absolute inset-0 w-full h-full pointer-events-none"
+                                style={{ overflow: 'visible' }}
+                                viewBox="0 0 100 750"
+                                preserveAspectRatio="none"
+                            >
                                 <path
                                     d={`
-                                M ${getNodePosition(0).x}% ${getNodePosition(0).y} 
+                                M ${getNodePosition(0).x} ${getNodePosition(0).y} 
                                 ${[...Array(8)].map((_, i) => {
                                         const next = getNodePosition(i + 1);
-                                        return `L ${next.x}% ${next.y}`;
+                                        return `L ${next.x} ${next.y}`;
                                     }).join(' ')}
                             `}
                                     stroke="#D6D3CD"
-                                    strokeWidth="6"
+                                    strokeWidth="0.5" // Reduced width because coordinate space is small (0-100 width)
+                                    vectorEffect="non-scaling-stroke" // Ensure stroke doesn't get distorted
                                     fill="none"
                                     strokeLinecap="round"
-                                    strokeDasharray="12 8"
+                                    strokeDasharray="2 2" // Adjusted for new scale
                                 />
                             </svg>
 
@@ -473,7 +510,7 @@ export default function NawinPath() {
                                     <div
                                         key={cellId}
                                         className="absolute transform -translate-x-1/2 -translate-y-1/2 w-20 flex flex-col items-center justify-center cursor-pointer group"
-                                        style={{ left: `${pos.x}%`, top: pos.y }}
+                                        style={{ left: `${pos.x}%`, top: `${pos.y / 7.5}%` }}
                                         onClick={() => handleCellClick(attr.id, col)}
                                     >
                                         <motion.div
