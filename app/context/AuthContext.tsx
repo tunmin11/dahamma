@@ -40,11 +40,27 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         if (!auth || !auth.app) {
+            console.warn("Auth not initialized for context.");
             setLoading(false);
             return;
         }
 
+        // Explicitly set persistence to LOCAL
+        // Note: This is usually default, but good to ensure.
+        import("firebase/auth").then(({ setPersistence, browserLocalPersistence }) => {
+            setPersistence(auth, browserLocalPersistence)
+                .then(() => console.log("🔐 Auth Persistence set to LOCAL"))
+                .catch((e) => console.error("Could not set auth persistence:", e));
+        });
+
+        console.log("👀 Auth Context: Listening for state changes...");
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            // Log the user state change
+            if (currentUser) {
+                console.log("✅ User Sign-In Detected:", currentUser.email, currentUser.uid);
+            } else {
+                console.log("👋 User is currently signed out.");
+            }
             setUser(currentUser);
             setLoading(false);
         });
