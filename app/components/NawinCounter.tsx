@@ -50,10 +50,15 @@ export default function NawinCounter({ attribute, onClose, onComplete, initialCo
                     <X size={24} />
                 </button>
                 <div className="text-center">
-                    <h2 className={`font-bold text-transparent bg-clip-text bg-gradient-to-r ${attribute.color}`}>
+                    <h2 className={`text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${attribute.color} mb-1`}>
                         {attribute.pali}
+                        {attribute.meaning && <span className="block text-lg font-normal text-white/90 mt-1">{attribute.meaning}</span>}
                     </h2>
-                    <p className="text-white/40 text-xs uppercase tracking-wider">Level {attribute.id}</p>
+                    {attribute.description && (
+                        <p className="text-white/60 text-xs font-medium tracking-wide border px-3 py-1 rounded-full border-white/10 inline-block mt-2">
+                            {attribute.description}
+                        </p>
+                    )}
                 </div>
                 <div className="w-10" /> {/* Spacer */}
             </div>

@@ -2,15 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Check, Lock, Leaf, Calendar, Bell } from "lucide-react";
+import { Check, Lock, Leaf, Calendar, Bell, X } from "lucide-react";
 import { nawinAttributes } from "../data/nawin";
 import ReminderSettings from "./ReminderSettings";
+import { getNawinDayInfo } from "../utils/nawinLogic";
+import { NawinDayInfo } from "../utils/nawinLogic";
 
 export default function NawinPath() {
     const [completedCells, setCompletedCells] = useState<string[]>([]);
     const [startDate, setStartDate] = useState<string | null>(null);
     const [showReminder, setShowReminder] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const [hasInitialScrolled, setHasInitialScrolled] = useState(false);
+    const [selectedDay, setSelectedDay] = useState<NawinDayInfo | null>(null);
 
     // Persistence
     useEffect(() => {
@@ -21,6 +25,28 @@ export default function NawinPath() {
         if (savedCompleted) setCompletedCells(JSON.parse(savedCompleted));
         if (savedDate) setStartDate(savedDate);
     }, []);
+
+    // Auto-scroll to current stage
+    useEffect(() => {
+        if (isClient && !hasInitialScrolled) {
+            // Calculate current stage (1-based)
+            // If all complete (81), stick to 9.
+            // If 0 complete, 1.
+            const totalCompleted = completedCells.length;
+            const currentStage = Math.min(9, Math.floor(totalCompleted / 9) + 1);
+
+            // Give a small delay for render
+            const timer = setTimeout(() => {
+                const element = document.getElementById(`stage-${currentStage}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                setHasInitialScrolled(true);
+            }, 100);
+
+            return () => clearTimeout(timer);
+        }
+    }, [isClient, completedCells, hasInitialScrolled]);
 
     const handleStartSetup = (dateString: string) => {
         const date = new Date(dateString);
@@ -41,6 +67,7 @@ export default function NawinPath() {
             setCompletedCells([]);
             localStorage.removeItem("nawin_startDate");
             localStorage.removeItem("nawin_completedCells");
+            setHasInitialScrolled(false);
         }
     };
 
@@ -53,18 +80,34 @@ export default function NawinPath() {
         return false;
     };
 
+
     const handleCellClick = (row: number, col: number) => {
-        const cellId = getCellId(row, col);
         if (!isCellUnlocked(row, col)) return;
 
-        let newCompleted;
-        if (completedCells.includes(cellId)) {
-            newCompleted = completedCells.filter(id => id !== cellId);
-        } else {
-            newCompleted = [...completedCells, cellId];
+        // Calculate absolute day (1-81)
+        const dayOfRitual = ((row - 1) * 9) + col;
+        const info = getNawinDayInfo(dayOfRitual);
+
+        setSelectedDay(info);
+    };
+
+    const handleDayComplete = () => {
+        if (!selectedDay) return;
+
+        const row = selectedDay.stage; // This is actually stage ID
+        // Note: Logic needs (row, col).
+        // We can reverse calc col or pass it.
+        // Row is stage. Col is (day-1)%9 + 1.
+        const col = ((selectedDay.day - 1) % 9) + 1;
+        const cellId = getCellId(row, col);
+
+        if (!completedCells.includes(cellId)) {
+            const newCompleted = [...completedCells, cellId];
+            setCompletedCells(newCompleted);
+            localStorage.setItem("nawin_completedCells", JSON.stringify(newCompleted));
         }
-        setCompletedCells(newCompleted);
-        localStorage.setItem("nawin_completedCells", JSON.stringify(newCompleted));
+
+        setSelectedDay(null);
     };
 
     const getCellDate = (row: number, col: number) => {
@@ -87,7 +130,14 @@ export default function NawinPath() {
 
         // Sine wave pattern
         const x = xBase + Math.sin(index * 0.8) * xAmp;
-        return { x, y: index * ySpacing };
+
+        // Reverse Y: Day 1 (index 0) at Bottom, Day 9 (index 8) at Top
+        // Container roughly 750px.
+        // Let's start from y=680 for index 0 div center
+        const startY = 680;
+        const y = startY - (index * ySpacing);
+
+        return { x, y };
     };
 
     // Helper for Circular Progress
@@ -98,6 +148,21 @@ export default function NawinPath() {
     const circleRadius = 18;
     const circleCircumference = 2 * Math.PI * circleRadius;
     // This is purely for rendering, offset calculation is done in JSX
+
+    // Construct Attribute for Selected Day View
+    const getSelectedAttribute = () => {
+        if (!selectedDay) return null;
+        const stageColor = nawinAttributes.find(a => a.id === selectedDay.stage)?.color || "from-gray-500 to-gray-600";
+
+        return {
+            id: selectedDay.day, // Use absolute day as ID context
+            pali: selectedDay.attribute,
+            meaning: selectedDay.burmese, // Show Burmese
+            description: `Stage ${selectedDay.stage} • ${selectedDay.planet.toUpperCase()} • ${selectedDay.beads} Rounds`,
+            requiredCounts: selectedDay.beads * 108,
+            color: stageColor
+        };
+    };
 
     if (isClient && !startDate) {
         return (
@@ -120,8 +185,70 @@ export default function NawinPath() {
 
     return (
         <div className="w-full pb-20 relative">
+            {/* Simple Day Info Modal */}
+            {selectedDay && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedDay(null)}>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden"
+                    >
+                        {/* Header */}
+                        <div className={`p-6 bg-gradient-to-r ${getSelectedAttribute()?.color} text-white text-center relative`}>
+                            <button
+                                onClick={() => setSelectedDay(null)}
+                                className="absolute top-4 right-4 p-1 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
+                            >
+                                <X size={16} />
+                            </button>
+                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-1 block">
+                                Day {selectedDay.day} • Stage {selectedDay.stage}
+                            </span>
+                            <h3 className="text-2xl font-bold mb-1">{selectedDay.attribute}</h3>
+                            <p className="text-lg opacity-90 font-medium">{selectedDay.burmese}</p>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6">
+                            <div className="flex items-center justify-center gap-3 mb-8">
+                                <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-100 flex-1">
+                                    <div className="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">Planet</div>
+                                    <div className="font-bold text-gray-800 capitalize">{selectedDay.planet}</div>
+                                </div>
+                                <div className="text-center p-4 bg-orange-50 rounded-xl border border-orange-100 flex-1">
+                                    <div className="text-orange-400 text-[10px] font-bold uppercase tracking-wider mb-1">Beads</div>
+                                    <div className="font-bold text-gray-800">{selectedDay.beads} Rounds</div>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={handleDayComplete}
+                                className={`
+                                    w-full py-3.5 rounded-xl font-bold font-medium transition-all flex items-center justify-center gap-2
+                                    ${completedCells.includes(getCellId(selectedDay.stage, ((selectedDay.day - 1) % 9) + 1))
+                                        ? "bg-red-50 text-red-600 hover:bg-red-100"
+                                        : "bg-gray-900 text-white hover:bg-gray-800 shadow-lg hover:shadow-xl"
+                                    }
+                                `}
+                            >
+                                {completedCells.includes(getCellId(selectedDay.stage, ((selectedDay.day - 1) % 9) + 1)) ? (
+                                    <>Mark as Incomplete</>
+                                ) : (
+                                    <>
+                                        <Check size={18} />
+                                        Mark as Complete
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+
             {/* Top Controls & Progress */}
-            <div className="sticky top-0 z-30 bg-[#F0EEE9]/90 backdrop-blur-md py-4 px-6 border-b border-black/5 flex justify-between items-center mb-6">
+            <div className="sticky top-0 z-30 bg-[#F0EEE9]/90 backdrop-blur-md py-4 px-6 border-b border-black/5 flex justify-between items-center mb-6 shadow-sm">
                 <button onClick={() => setShowReminder(true)} className="p-2 bg-white/50 rounded-full text-gray-600 hover:bg-white hover:text-black transition-colors shadow-sm">
                     <Bell size={20} />
                 </button>
@@ -156,9 +283,9 @@ export default function NawinPath() {
 
             {showReminder && <ReminderSettings onClose={() => setShowReminder(false)} startDate={startDate} />}
 
-            <div className="space-y-12">
+            <div className="space-y-12 flex flex-col-reverse">
                 {nawinAttributes.map((attr, attrIndex) => (
-                    <div key={attr.id} className="relative">
+                    <div key={attr.id} id={`stage-${attr.id}`} className="relative">
                         {/* Chapter Header */}
                         <div className={`
                     sticky top-24 z-20 mx-auto w-max max-w-[85%] px-6 py-2 rounded-full shadow-md mb-8 border border-white/40
