@@ -26,26 +26,17 @@ export default function ReminderSettings({ onClose, startDate }: ReminderSetting
 
         // Calculate Tomorrow's Status
         if (startDate) {
-            const start = new Date(startDate);
+            const [year, month, day] = startDate.split('-').map(Number);
+            const startZero = new Date(year, month - 1, day);
+
             const today = new Date();
             const tomorrow = new Date(today);
             tomorrow.setDate(today.getDate() + 1);
 
-            // Diff in days
-            const diffTime = Math.abs(tomorrow.getTime() - start.getTime());
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            // Note: diffDays is 1-based index if we consider startDate as Day 1? 
-            // Let's align with NawinPath logic.
-            // NawinPath uses calculated dates. 
-            // If start = Mon Dec 1. Today = Mon Dec 1. Tomorrow = Tue Dec 2. 
-            // Tue Dec 2 should be Day 2.
-            // diffDays calculation needs to be precise.
+            const tomorrowZero = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate());
 
             const oneDay = 24 * 60 * 60 * 1000;
-            // User Timezone offset handling implies we should just compare dates roughly or stick to 00:00
-            const startZero = new Date(start.setHours(0, 0, 0, 0));
-            const tomorrowZero = new Date(tomorrow.setHours(0, 0, 0, 0));
-
+            // Diff in days
             const dayIndex = Math.round((tomorrowZero.getTime() - startZero.getTime()) / oneDay) + 1;
 
             // Day 5 of any stage is Veggie. 
