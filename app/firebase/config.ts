@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, Auth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -15,6 +16,7 @@ const firebaseConfig = {
 // Initialize Firebase
 let app;
 let auth: Auth;
+let db: Firestore;
 
 try {
     if (getApps().length > 0) {
@@ -28,10 +30,12 @@ try {
 
 if (app) {
     auth = getAuth(app);
+    db = getFirestore(app);
 } else {
     // Mock auth for build time or when keys are missing
     // This prevents build failures effectively
     auth = {} as Auth;
+    db = {} as Firestore;
 }
 
-export { auth };
+export { auth, db };
