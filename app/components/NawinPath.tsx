@@ -19,6 +19,8 @@ export default function NawinPath() {
     const [hasInitialScrolled, setHasInitialScrolled] = useState(false);
     const [selectedDay, setSelectedDay] = useState<NawinDayInfo | null>(null);
 
+    const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
+
     // Persistence & Sync
     useEffect(() => {
         setIsClient(true);
@@ -33,6 +35,7 @@ export default function NawinPath() {
     useEffect(() => {
         const syncUser = async () => {
             if (user) {
+                setSyncStatus('syncing');
                 try {
                     const docRef = doc(db, "users", user.uid);
                     const docSnap = await getDoc(docRef);
@@ -63,8 +66,17 @@ export default function NawinPath() {
                             }, { merge: true });
                         }
                     }
-                } catch (e) {
+                    setSyncStatus('success');
+                    setTimeout(() => setSyncStatus('idle'), 3000);
+                } catch (e: any) {
                     console.error("🔥 Error syncing with cloud:", e);
+                    setSyncStatus('error');
+                    // Alert on mobile to verify
+                    if (e.code === 'permission-denied') {
+                        alert("Sync Error: Permission Denied. Check Firebase Rules.");
+                    } else {
+                        alert(`Sync Error: ${e.message}`);
+                    }
                 }
             } else {
                 console.log("👤 No user logged in. Using local storage only.");
@@ -113,13 +125,22 @@ export default function NawinPath() {
         localStorage.setItem("nawin_startDate", dateString);
 
         if (user) {
+            setSyncStatus('syncing');
             console.log("☁️ Saving start date to cloud...", user.uid);
             setDoc(doc(db, "users", user.uid), {
                 nawinStartDate: dateString,
                 updatedAt: new Date()
             }, { merge: true })
-                .then(() => console.log("✅ Start date saved to cloud!"))
-                .catch((e) => console.error("❌ Failed to save start date:", e));
+                .then(() => {
+                    console.log("✅ Start date saved to cloud!");
+                    setSyncStatus('success');
+                    setTimeout(() => setSyncStatus('idle'), 3000);
+                })
+                .catch((e: any) => {
+                    console.error("❌ Failed to save start date:", e);
+                    setSyncStatus('error');
+                    alert(`Save Failed: ${e.message}`);
+                });
         }
     };
 
@@ -132,11 +153,20 @@ export default function NawinPath() {
             setHasInitialScrolled(false);
 
             if (user) {
+                setSyncStatus('syncing');
                 setDoc(doc(db, "users", user.uid), {
                     nawinStartDate: null,
                     nawinCompleted: [],
                     updatedAt: new Date()
-                }, { merge: true });
+                }, { merge: true })
+                    .then(() => {
+                        setSyncStatus('success');
+                        setTimeout(() => setSyncStatus('idle'), 3000);
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        setSyncStatus('error');
+                    });
             }
         }
     };
@@ -378,9 +408,15 @@ export default function NawinPath() {
                     <span className="text-[10px] text-gray-400 font-medium mt-1 uppercase tracking-wider">{completedCount} of 81</span>
                 </div>
 
-                <button onClick={resetProgress} className="text-gray-400 text-xs hover:text-red-500 font-medium">
-                    Reset
-                </button>
+                <div className="flex items-center gap-2">
+                    {syncStatus === 'syncing' && <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" title="Syncing..." />}
+                    {syncStatus === 'success' && <div className="w-2 h-2 bg-green-500 rounded-full" title="Synced" />}
+                    {syncStatus === 'error' && <div className="w-2 h-2 bg-red-500 rounded-full" title="Sync Error" />}
+
+                    <button onClick={resetProgress} className="text-gray-400 text-xs hover:text-red-500 font-medium">
+                        Reset
+                    </button>
+                </div>
             </div>
 
             {showReminder && <ReminderSettings onClose={() => setShowReminder(false)} startDate={startDate} />}
