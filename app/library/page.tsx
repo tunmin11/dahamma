@@ -49,9 +49,9 @@ export default function LibraryPage() {
                                 className="group relative flex flex-col items-center cursor-pointer"
                             >
                                 {/* Book Cover Container */}
-                                <div className="relative w-48 aspect-[2/3] md:w-56 shadow-xl rounded-r-lg rounded-l-sm transition-all duration-300 group-hover:shadow-2xl bg-black">
+                                <div className="relative w-48 aspect-[2/3] md:w-56 rounded-r-lg rounded-l-sm transition-all duration-300 group-hover:shadow-2xl">
                                     {/* Spine Effect */}
-                                    <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-white/20 to-transparent z-10 rounded-l-sm mix-blend-overlay" />
+                                    <div className="absolute left-0 top-0 bottom-0 w-2 rounded-l-sm mix-blend-overlay" />
 
                                     {/* Cover Image */}
                                     <img
@@ -65,7 +65,7 @@ export default function LibraryPage() {
                                 </div>
 
                                 {/* Metadata below book */}
-                                <div className="mt-6 text-center">
+                                <div className="mt-1 text-center">
                                     <h2 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-amber-800 transition-colors">
                                         {book.nativeTitle}
                                     </h2>
@@ -77,15 +77,6 @@ export default function LibraryPage() {
                         </Link>
                     ))}
 
-                    {/* Spacer / Coming Soon Placeholder */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className="flex flex-col items-center justify-center text-center w-48 aspect-[2/3] md:w-56 border border-gray-300 rounded-lg bg-gray-50"
-                    >
-                        <span className="text-gray-400 text-sm font-medium">Coming Soon</span>
-                    </motion.div>
                 </div>
             </main>
         </div>

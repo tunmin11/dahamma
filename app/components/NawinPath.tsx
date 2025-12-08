@@ -49,11 +49,15 @@ export default function NawinPath() {
     }, [isClient, completedCells, hasInitialScrolled]);
 
     const handleStartSetup = (dateString: string) => {
-        const date = new Date(dateString);
-        const userTimezoneOffset = date.getTimezoneOffset() * 60000;
-        const localDate = new Date(date.getTime() + userTimezoneOffset);
+        if (!dateString) return;
 
-        if (localDate.getDay() !== 1) {
+        // Create a date object from the input value (YYYY-MM-DD)
+        // We append "T00:00:00" to ensure local time parsing or at least consistent parsing
+        // actually, let's just parse the components to be safe from timezone shifts
+        const [year, month, day] = dateString.split('-').map(Number);
+        const date = new Date(year, month - 1, day);
+
+        if (date.getDay() !== 1) {
             alert("Please select a Monday to start the ritual.");
             return;
         }
@@ -112,9 +116,9 @@ export default function NawinPath() {
 
     const getCellDate = (row: number, col: number) => {
         if (!startDate) return null;
-        const start = new Date(startDate);
-        const userTimezoneOffset = start.getTimezoneOffset() * 60000;
-        const localStart = new Date(start.getTime() + userTimezoneOffset);
+        const [year, month, day] = startDate.split('-').map(Number);
+        const localStart = new Date(year, month - 1, day);
+
         const offset = ((row - 1) * 9) + (col - 1);
         const cellDate = new Date(localStart);
         cellDate.setDate(localStart.getDate() + offset);
