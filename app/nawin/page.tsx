@@ -11,7 +11,7 @@ export default function NawinPage() {
             <motion.header
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                className="pt-8 px-6 mb-4 text-center relative z-20"
+                className="pt-8 px-6 mb-12 text-center relative z-20"
             >
                 <Link href="/" className="absolute left-6 top-10 text-gray-400 hover:text-black transition-colors">
                     <ChevronLeft size={24} />

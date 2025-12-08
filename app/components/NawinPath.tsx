@@ -5,10 +5,13 @@ import { motion } from "framer-motion";
 import { Check, Lock, Leaf, Calendar, Bell, X } from "lucide-react";
 import { nawinAttributes } from "../data/nawin";
 import ReminderSettings from "./ReminderSettings";
-import { getNawinDayInfo } from "../utils/nawinLogic";
-import { NawinDayInfo } from "../utils/nawinLogic";
+import { db } from "../firebase/config";
+import { useAuth } from "../context/AuthContext";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { NawinDayInfo, getNawinDayInfo } from "../utils/nawinLogic";
 
 export default function NawinPath() {
+    const { user } = useAuth();
     const [completedCells, setCompletedCells] = useState<string[]>([]);
     const [startDate, setStartDate] = useState<string | null>(null);
     const [showReminder, setShowReminder] = useState(false);
@@ -16,7 +19,7 @@ export default function NawinPath() {
     const [hasInitialScrolled, setHasInitialScrolled] = useState(false);
     const [selectedDay, setSelectedDay] = useState<NawinDayInfo | null>(null);
 
-    // Persistence
+    // Persistence & Sync
     useEffect(() => {
         setIsClient(true);
         const savedCompleted = localStorage.getItem("nawin_completedCells");
@@ -25,6 +28,49 @@ export default function NawinPath() {
         if (savedCompleted) setCompletedCells(JSON.parse(savedCompleted));
         if (savedDate) setStartDate(savedDate);
     }, []);
+
+    // Cloud Sync
+    useEffect(() => {
+        const syncUser = async () => {
+            if (user) {
+                try {
+                    const docRef = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(docRef);
+
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+
+                        // Merge or overwrite? Let's prioritize Cloud for now, or Merge unique.
+                        // Assuming simple overwrite from cloud if it exists is safer for "Sync across devices"
+                        if (data.nawinCompleted) {
+                            setCompletedCells(data.nawinCompleted);
+                            localStorage.setItem("nawin_completedCells", JSON.stringify(data.nawinCompleted));
+                        }
+                        if (data.nawinStartDate) {
+                            setStartDate(data.nawinStartDate);
+                            localStorage.setItem("nawin_startDate", data.nawinStartDate);
+                        }
+                    } else {
+                        // If no cloud data, init with local
+                        // But wait, if we have local data we should push it? 
+                        // Let's do that in the "save" actions to avoid race conditions or overwriting empty cloud on fresh login?
+                        // Actually, if it's a new user doc, we can push local state.
+                        if (completedCells.length > 0 || startDate) {
+                            await setDoc(docRef, {
+                                nawinCompleted: completedCells,
+                                nawinStartDate: startDate,
+                                updatedAt: new Date()
+                            }, { merge: true });
+                        }
+                    }
+                } catch (e) {
+                    console.error("Error syncing with cloud:", e);
+                }
+            }
+        };
+
+        syncUser();
+    }, [user]);
 
     // Auto-scroll to current stage
     useEffect(() => {
@@ -63,6 +109,13 @@ export default function NawinPath() {
         }
         setStartDate(dateString);
         localStorage.setItem("nawin_startDate", dateString);
+
+        if (user) {
+            setDoc(doc(db, "users", user.uid), {
+                nawinStartDate: dateString,
+                updatedAt: new Date()
+            }, { merge: true });
+        }
     };
 
     const resetProgress = () => {
@@ -72,6 +125,14 @@ export default function NawinPath() {
             localStorage.removeItem("nawin_startDate");
             localStorage.removeItem("nawin_completedCells");
             setHasInitialScrolled(false);
+
+            if (user) {
+                setDoc(doc(db, "users", user.uid), {
+                    nawinStartDate: null,
+                    nawinCompleted: [],
+                    updatedAt: new Date()
+                }, { merge: true });
+            }
         }
     };
 
@@ -109,6 +170,32 @@ export default function NawinPath() {
             const newCompleted = [...completedCells, cellId];
             setCompletedCells(newCompleted);
             localStorage.setItem("nawin_completedCells", JSON.stringify(newCompleted));
+
+            if (user) {
+                setDoc(doc(db, "users", user.uid), {
+                    nawinCompleted: newCompleted,
+                    updatedAt: new Date()
+                }, { merge: true });
+            }
+        } else {
+            // Handle toggle off logic if needed? 
+            // The original code only handles "If not included, add". 
+            // But the UI shows "Mark as Incomplete". 
+            // Let's check logic: The UI button says "Mark as Incomplete" but logic only adds?
+            // Ah, look at lines 230+: it calls handleDayComplete regardless.
+            // But original logic 104: if (!includes) add. It does NOT remove!
+            // I should probably fix that too if user wants to untoggle.
+            // Ref: "Mark as Incomplete" implies toggling off.
+            const newCompleted = completedCells.filter(id => id !== cellId);
+            setCompletedCells(newCompleted);
+            localStorage.setItem("nawin_completedCells", JSON.stringify(newCompleted));
+
+            if (user) {
+                setDoc(doc(db, "users", user.uid), {
+                    nawinCompleted: newCompleted,
+                    updatedAt: new Date()
+                }, { merge: true });
+            }
         }
 
         setSelectedDay(null);
@@ -252,8 +339,8 @@ export default function NawinPath() {
             )}
 
             {/* Top Controls & Progress */}
-            <div className="sticky top-0 z-30 bg-[#F0EEE9]/95 backdrop-blur-md py-4 px-6 border-b border-black/5 flex justify-between items-center mb-6 shadow-sm supports-[backdrop-filter]:bg-[#F0EEE9]/80">
-                <button onClick={() => setShowReminder(true)} className="p-2 bg-white/50 rounded-full text-gray-600 hover:bg-white hover:text-black transition-colors shadow-sm ring-1 ring-black/5">
+            <div className="sticky top-0 z-40 bg-[#F0EEE9]/95 backdrop-blur-md py-4 px-6 border-b border-black/5 flex justify-between items-center mb-6 shadow-sm supports-[backdrop-filter]:bg-[#F0EEE9]/80">
+                <button onClick={() => setShowReminder(true)} className="p-2 bg-white/50 rounded-full text-gray-600 hover:bg-white hover:text-black transition-colors shadow-sm ring-1 ring-black/5 relative z-10">
                     <Bell size={20} />
                 </button>
 
