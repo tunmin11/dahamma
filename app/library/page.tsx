@@ -15,6 +15,15 @@ export default function LibraryPage() {
             color: "from-orange-500 to-amber-600",
             coverImage: "/covers/paritta.png",
         },
+        {
+            id: "patthana",
+            href: "/books/ပဋ္ဌာန်းပါဠိတော်.pdf",
+            title: "Patthana Pali",
+            subtitle: "Conditional Relations",
+            nativeTitle: "ပဋ္ဌာန်းပါဠိတော်",
+            color: "from-amber-700 to-red-900",
+            coverImage: "/covers/patthana.png",
+        },
         // Add other text collections here in the future
     ];
 
@@ -37,7 +46,7 @@ export default function LibraryPage() {
             </motion.header>
 
             <main className="flex-1">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center">
                     {books.map((book, index) => (
                         <Link key={book.id} href={book.href}>
                             <motion.div
