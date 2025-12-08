@@ -248,8 +248,8 @@ export default function NawinPath() {
             )}
 
             {/* Top Controls & Progress */}
-            <div className="sticky top-0 z-30 bg-[#F0EEE9]/90 backdrop-blur-md py-4 px-6 border-b border-black/5 flex justify-between items-center mb-6 shadow-sm">
-                <button onClick={() => setShowReminder(true)} className="p-2 bg-white/50 rounded-full text-gray-600 hover:bg-white hover:text-black transition-colors shadow-sm">
+            <div className="sticky top-0 z-30 bg-[#F0EEE9]/95 backdrop-blur-md py-4 px-6 border-b border-black/5 flex justify-between items-center mb-6 shadow-sm supports-[backdrop-filter]:bg-[#F0EEE9]/80">
+                <button onClick={() => setShowReminder(true)} className="p-2 bg-white/50 rounded-full text-gray-600 hover:bg-white hover:text-black transition-colors shadow-sm ring-1 ring-black/5">
                     <Bell size={20} />
                 </button>
 

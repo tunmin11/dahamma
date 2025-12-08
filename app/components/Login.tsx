@@ -20,10 +20,10 @@ export default function Login() {
             {user ? (
                 <div className="flex items-center gap-3">
                     <div className="hidden md:block text-right">
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                        <p className="text-sm font-medium text-gray-700">
                             {user.displayName}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="text-xs text-gray-500">
                             {user.email}
                         </p>
                     </div>
@@ -36,7 +36,7 @@ export default function Login() {
                     )}
                     <button
                         onClick={logOut}
-                        className="p-2 rounded-full cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-gray-600 dark:text-gray-300"
+                        className="p-2 rounded-full cursor-pointer hover:bg-gray-100 transition-all text-gray-600 hover:text-red-500"
                         title="Sign Out"
                     >
                         <LogOut size={20} />
@@ -45,7 +45,7 @@ export default function Login() {
             ) : (
                 <button
                     onClick={googleSignIn}
-                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-white rounded-full shadow-md hover:shadow-lg transition-all border border-gray-200 dark:border-gray-700 font-medium text-sm cursor-pointer"
+                    className="flex items-center gap-2 px-4 py-2 bg-white text-gray-800 rounded-full shadow-md hover:shadow-lg transition-all border border-gray-200 font-medium text-sm cursor-pointer"
                 >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                         <path

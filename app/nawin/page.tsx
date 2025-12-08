@@ -7,7 +7,7 @@ import NawinPath from "../components/NawinPath";
 
 export default function NawinPage() {
     return (
-        <div className="min-h-screen text-gray-800 p-0 md:p-4 max-w-lg mx-auto flex flex-col relative bg-[#F0EEE9]">
+        <div className="min-h-screen text-gray-800 p-0 md:p-4 max-w-lg mx-auto flex flex-col relative">
             <motion.header
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}

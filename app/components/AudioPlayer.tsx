@@ -77,7 +77,7 @@ export default function AudioPlayer({
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 100, opacity: 0 }}
-                className="fixed bottom-0 left-0 right-0 bg-white/10 backdrop-blur-lg border-t border-white/10 p-4 pb-8 z-50 shadow-2xl"
+                className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 p-4 pb-8 z-50 shadow-[0_-8px_30px_rgba(0,0,0,0.05)]"
             >
                 <audio
                     ref={audioRef}
@@ -90,15 +90,15 @@ export default function AudioPlayer({
                 {/* Toggle Reader Button - Centered above player or integrated? */}
                 <button
                     onClick={onToggleReader}
-                    className="absolute -top-5 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-1 text-white/80 hover:bg-white/20 transition-all z-10"
+                    className="absolute -top-5 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur-md border border-gray-200 rounded-full p-1 text-gray-500 hover:bg-white hover:text-black transition-all z-10 shadow-sm"
                 >
                     {isReaderOpen ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
                 </button>
 
                 <div className="max-w-md mx-auto space-y-4 pt-2">
                     <div className="text-center cursor-pointer" onClick={onToggleReader}>
-                        <h3 className="text-lg font-bold text-white mb-1 truncate">{currentSutta.title}</h3>
-                        <p className="text-xs text-white/50 uppercase tracking-widest">
+                        <h3 className="text-lg font-bold text-gray-900 mb-1 truncate">{currentSutta.title}</h3>
+                        <p className="text-xs text-gray-400 uppercase tracking-widest">
                             {isReaderOpen ? "Swipe down to close" : "Tap for Lyrics"}
                         </p>
                     </div>
@@ -110,9 +110,9 @@ export default function AudioPlayer({
                             max={duration || 100}
                             value={progress}
                             onChange={handleSeek}
-                            className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+                            className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-orange-600 [&::-webkit-slider-thumb]:rounded-full"
                         />
-                        <div className="flex justify-between text-xs text-white/50 font-mono">
+                        <div className="flex justify-between text-xs text-gray-400 font-mono">
                             <span>{formatTime(progress)}</span>
                             <span>{formatTime(duration)}</span>
                         </div>
@@ -121,21 +121,21 @@ export default function AudioPlayer({
                     <div className="flex justify-center items-center gap-8">
                         <button
                             onClick={onPrev}
-                            className="text-white/70 hover:text-white transition-colors active:scale-95 transform"
+                            className="text-gray-400 hover:text-gray-900 transition-colors active:scale-95 transform"
                         >
                             <SkipBack size={24} />
                         </button>
 
                         <button
                             onClick={onPlayPause}
-                            className="w-14 h-14 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all active:scale-90 transform shadow-lg border border-white/10"
+                            className="w-14 h-14 bg-gray-900 hover:bg-black rounded-full flex items-center justify-center text-white transition-all active:scale-90 transform shadow-lg shadow-gray-400/20"
                         >
                             {isPlaying ? <Pause size={28} fill="currentColor" /> : <Play size={28} fill="currentColor" className="ml-1" />}
                         </button>
 
                         <button
                             onClick={onNext}
-                            className="text-white/70 hover:text-white transition-colors active:scale-95 transform"
+                            className="text-gray-400 hover:text-gray-900 transition-colors active:scale-95 transform"
                         >
                             <SkipForward size={24} />
                         </button>
