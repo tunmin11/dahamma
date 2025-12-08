@@ -64,8 +64,10 @@ export default function NawinPath() {
                         }
                     }
                 } catch (e) {
-                    console.error("Error syncing with cloud:", e);
+                    console.error("🔥 Error syncing with cloud:", e);
                 }
+            } else {
+                console.log("👤 No user logged in. Using local storage only.");
             }
         };
 
@@ -111,10 +113,13 @@ export default function NawinPath() {
         localStorage.setItem("nawin_startDate", dateString);
 
         if (user) {
+            console.log("☁️ Saving start date to cloud...", user.uid);
             setDoc(doc(db, "users", user.uid), {
                 nawinStartDate: dateString,
                 updatedAt: new Date()
-            }, { merge: true });
+            }, { merge: true })
+                .then(() => console.log("✅ Start date saved to cloud!"))
+                .catch((e) => console.error("❌ Failed to save start date:", e));
         }
     };
 
@@ -172,10 +177,13 @@ export default function NawinPath() {
             localStorage.setItem("nawin_completedCells", JSON.stringify(newCompleted));
 
             if (user) {
+                console.log("☁️ Saving progress (Checked) to cloud...", newCompleted);
                 setDoc(doc(db, "users", user.uid), {
                     nawinCompleted: newCompleted,
                     updatedAt: new Date()
-                }, { merge: true });
+                }, { merge: true })
+                    .then(() => console.log("✅ Progress saved!"))
+                    .catch((e) => console.error("❌ Failed to save:", e));
             }
         } else {
             // Handle toggle off logic if needed? 
@@ -191,10 +199,13 @@ export default function NawinPath() {
             localStorage.setItem("nawin_completedCells", JSON.stringify(newCompleted));
 
             if (user) {
+                console.log("☁️ Saving progress (Unchecked) to cloud...", newCompleted);
                 setDoc(doc(db, "users", user.uid), {
                     nawinCompleted: newCompleted,
                     updatedAt: new Date()
-                }, { merge: true });
+                }, { merge: true })
+                    .then(() => console.log("✅ Progress synced!"))
+                    .catch((e) => console.error("❌ Failed to sync:", e));
             }
         }
 
