@@ -363,7 +363,7 @@ export default function NawinPath() {
                             <button
                                 onClick={handleDayComplete}
                                 className={`
-                                    w-full py-3.5 rounded-xl font-bold font-medium transition-all flex items-center justify-center gap-2
+                                    w-full py-3.5  rounded-xl font-bold font-medium transition-all flex items-center justify-center gap-2
                                     ${completedCells.includes(getCellId(selectedDay.stage, ((selectedDay.day - 1) % 9) + 1))
                                         ? "bg-red-50 text-red-600 hover:bg-red-100"
                                         : "bg-gray-900 text-white hover:bg-gray-800 shadow-lg hover:shadow-xl"
@@ -385,7 +385,7 @@ export default function NawinPath() {
             )}
 
             {/* Top Controls & Progress */}
-            <div className="sticky top-0 z-40 bg-[#F0EEE9]/95 backdrop-blur-md py-4 px-6 border-b border-black/5 flex justify-between items-center mb-6 shadow-sm supports-[backdrop-filter]:bg-[#F0EEE9]/80">
+            <div className="sticky top-0 z-40 bg-[#F0EEE9]/95 backdrop-blur-md py-4 px-6 border-b border-black/5 flex justify-center gap-20 items-center mb-6 shadow-sm supports-[backdrop-filter]:bg-[#F0EEE9]/80">
                 <button onClick={() => setShowReminder(true)} className="p-2 bg-white/50 rounded-full text-gray-600 hover:bg-white hover:text-black transition-colors shadow-sm ring-1 ring-black/5 relative z-10">
                     <Bell size={20} />
                 </button>
@@ -413,41 +413,47 @@ export default function NawinPath() {
                     <span className="text-[10px] text-gray-400 font-medium mt-1 uppercase tracking-wider">{completedCount} of 81</span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    {syncStatus === 'syncing' && <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" title="Syncing..." />}
-                    {syncStatus === 'success' && <div className="w-2 h-2 bg-green-500 rounded-full" title="Synced" />}
-                    {syncStatus === 'error' && <div className="w-2 h-2 bg-red-500 rounded-full" title="Sync Error" />}
-
-                    <button onClick={resetProgress} className="text-gray-400 text-xs hover:text-red-500 font-medium">
-                        Reset
-                    </button>
-
-                    {/* Debug Button */}
-                    <button
-                        onClick={async () => {
-                            if (!user) {
-                                alert("Not logged in!");
-                                return;
-                            }
-                            try {
-                                setSyncStatus('syncing');
-                                await setDoc(doc(db, "users", user.uid), {
-                                    lastTest: new Date(),
-                                    email: user.email // Save email to verify it's the right user
-                                }, { merge: true });
-                                alert("Connection Successful! Data written to Firestore.");
-                                setSyncStatus('success');
-                            } catch (e: any) {
-                                alert(`Connection Failed: ${e.message}`);
-                                setSyncStatus('error');
-                                console.error(e);
-                            }
-                        }}
-                        className="ml-2 px-2 py-1 bg-gray-100 rounded text-[10px] text-gray-500 hover:bg-gray-200"
-                    >
-                        Test Cloud
-                    </button>
+                {/* Sync Status Indicators */}
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-white/50 rounded-lg border border-gray-100">
+                    {user ? (
+                        <>
+                            {syncStatus === 'syncing' && (
+                                <>
+                                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+                                    <span className="text-[10px] text-gray-400 font-medium">Syncing...</span>
+                                </>
+                            )}
+                            {syncStatus === 'success' && (
+                                <>
+                                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                                    <span className="text-[10px] text-green-600 font-medium">Saved</span>
+                                </>
+                            )}
+                            {syncStatus === 'error' && (
+                                <>
+                                    <div className="w-2 h-2 bg-red-500 rounded-full" />
+                                    <span className="text-[10px] text-red-500 font-medium">Error</span>
+                                </>
+                            )}
+                            {syncStatus === 'idle' && (
+                                <>
+                                    <div className="w-2 h-2 bg-green-500/50 rounded-full" />
+                                    <span className="text-[10px] text-gray-400 font-medium">Cloud On</span>
+                                </>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <div className="w-2 h-2 bg-gray-300 rounded-full" />
+                            <span className="text-[10px] text-gray-400 font-medium">Local Only</span>
+                        </>
+                    )}
                 </div>
+
+                <button onClick={resetProgress} className="text-gray-400 text-xs hover:text-red-500 font-medium px-2">
+                    Reset
+                </button>
+
             </div>
 
             {showReminder && <ReminderSettings onClose={() => setShowReminder(false)} startDate={startDate} />}
@@ -457,7 +463,7 @@ export default function NawinPath() {
                     <div key={attr.id} id={`stage-${attr.id}`} className="relative">
                         {/* Chapter Header */}
                         <div className={`
-                    sticky top-24 z-20 mx-auto w-max max-w-[85%] px-6 py-2 rounded-full shadow-md mb-8 border border-white/40
+                    sticky top-28 z-20 mx-auto w-max max-w-[85%] px-6 py-2 rounded-full shadow-md mb-8 border border-white/40
                     bg-gradient-to-r ${attr.color} text-white
                 `}>
                             <div className="text-center">
@@ -563,6 +569,6 @@ export default function NawinPath() {
                     </div>
                 ))}
             </div>
-        </div>
+        </div >
     );
 }

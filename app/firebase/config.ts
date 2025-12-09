@@ -30,7 +30,7 @@ try {
 
 if (app) {
     auth = getAuth(app);
-    db = getFirestore(app);
+    db = getFirestore(app, "dhamma-app");
 } else {
     // Mock auth for build time or when keys are missing
     // This prevents build failures effectively
