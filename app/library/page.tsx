@@ -24,6 +24,15 @@ export default function LibraryPage() {
             color: "from-amber-700 to-red-900",
             coverImage: "/covers/patthana.png",
         },
+        {
+            id: "phayar-shit-khoe",
+            href: "/phayar-shit-khoe",
+            title: "Phayar Shit Khoe",
+            subtitle: "Protective Verses",
+            nativeTitle: "ဘုရားရှိခိုး",
+            color: "from-emerald-700 to-teal-900",
+            coverImage: "/covers/PhayarShitKhoe.png",
+        },
         // Add other text collections here in the future
     ];
 
