@@ -39,8 +39,6 @@ export default function LibraryPage() {
     return (
         <div className="min-h-screen text-gray-800 p-6 md:p-8 max-w-6xl mx-auto flex flex-col">
             <motion.header
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
                 className="mt-4 mb-8 text-center relative"
             >
                 <Link href="/" className="absolute left-0 top-2 text-gray-400 hover:text-black transition-colors">
@@ -59,9 +57,6 @@ export default function LibraryPage() {
                     {books.map((book, index) => (
                         <Link key={book.id} href={book.href}>
                             <motion.div
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: index * 0.1 }}
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 className="group relative flex flex-col items-center cursor-pointer"

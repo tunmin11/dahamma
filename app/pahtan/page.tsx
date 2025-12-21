@@ -12,8 +12,6 @@ export default function PahtanPage() {
             <div className="w-full px-6 py-8 md:py-12">
                 {/* Header */}
                 <motion.header
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
                     className="mb-12 text-center relative"
                 >
                     <Link
@@ -39,9 +37,6 @@ export default function PahtanPage() {
                     {PahtanData.map((section, index) => (
                         <motion.div
                             key={index}
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: index * 0.05 }}
                             className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 md:p-8 hover:shadow-md transition-shadow duration-300"
                         >
                             {section.header && (
