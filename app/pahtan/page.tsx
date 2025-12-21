@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import PahtanData from "../data/pahtan";
 
 export default function PahtanPage() {
@@ -74,6 +74,9 @@ function AutoScrollControls() {
     const [speed, setSpeed] = useState(1); // 1 = Slow, 1.5 = Medium-Slow, 2 = Medium, 3 = Fast
     const [showSpeedMenu, setShowSpeedMenu] = useState(false);
 
+    // Use a ref to accumulate fractional scroll amounts
+    const scrollAccumulator = useRef(0);
+
     useEffect(() => {
         let animationFrameId: number;
 
@@ -84,8 +87,18 @@ function AutoScrollControls() {
                 // Speed 1.5: ~0.75px/frame
                 // Speed 2: ~1.0px/frame
                 // Speed 3: ~2.0px/frame
-                const scrollAmount = speed === 1 ? 0.5 : speed === 1.5 ? 0.75 : speed === 2 ? 1 : 2;
-                window.scrollBy(0, scrollAmount);
+                const scrollSpeed = speed === 1 ? 0.5 : speed === 1.5 ? 0.75 : speed === 2 ? 1 : 2;
+
+                // Add to accumulator
+                scrollAccumulator.current += scrollSpeed;
+
+                // Only scroll when we have at least 1 pixel to scroll
+                if (scrollAccumulator.current >= 1) {
+                    const pixelsToScroll = Math.floor(scrollAccumulator.current);
+                    window.scrollBy(0, pixelsToScroll);
+                    scrollAccumulator.current -= pixelsToScroll;
+                }
+
                 animationFrameId = requestAnimationFrame(scroll);
             }
         };
