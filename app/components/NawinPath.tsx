@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Check, Lock, Leaf, Calendar, Bell, X } from "lucide-react";
+import { Check, Lock, Leaf, Calendar, Bell, X, LayoutGrid, Route } from "lucide-react";
 import { nawinAttributes } from "../data/nawin";
 import ReminderSettings from "./ReminderSettings";
 import { db } from "../firebase/config";
@@ -18,6 +18,7 @@ export default function NawinPath() {
     const [isClient, setIsClient] = useState(false);
     const [hasInitialScrolled, setHasInitialScrolled] = useState(false);
     const [selectedDay, setSelectedDay] = useState<NawinDayInfo | null>(null);
+    const [viewMode, setViewMode] = useState<'path' | 'grid'>('path');
 
     const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
 
@@ -390,6 +391,13 @@ export default function NawinPath() {
                     <Bell size={20} />
                 </button>
 
+                <button
+                    onClick={() => setViewMode(prev => prev === 'path' ? 'grid' : 'path')}
+                    className="p-2 bg-white/50 rounded-full text-gray-600 hover:bg-white hover:text-black transition-colors shadow-sm ring-1 ring-black/5 relative z-10"
+                >
+                    {viewMode === 'path' ? <LayoutGrid size={20} /> : <Route size={20} />}
+                </button>
+
                 {/* Circular Progress Indicator */}
                 <div className="flex flex-col items-center">
                     <div className="relative w-12 h-12 flex items-center justify-center">
@@ -413,43 +421,6 @@ export default function NawinPath() {
                     <span className="text-[10px] text-gray-400 font-medium mt-1 uppercase tracking-wider">{completedCount} of 81</span>
                 </div>
 
-                {/* Sync Status Indicators */}
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-white/50 rounded-lg border border-gray-100">
-                    {user ? (
-                        <>
-                            {syncStatus === 'syncing' && (
-                                <>
-                                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
-                                    <span className="text-[10px] text-gray-400 font-medium">Syncing...</span>
-                                </>
-                            )}
-                            {syncStatus === 'success' && (
-                                <>
-                                    <div className="w-2 h-2 bg-green-500 rounded-full" />
-                                    <span className="text-[10px] text-green-600 font-medium">Saved</span>
-                                </>
-                            )}
-                            {syncStatus === 'error' && (
-                                <>
-                                    <div className="w-2 h-2 bg-red-500 rounded-full" />
-                                    <span className="text-[10px] text-red-500 font-medium">Error</span>
-                                </>
-                            )}
-                            {syncStatus === 'idle' && (
-                                <>
-                                    <div className="w-2 h-2 bg-green-500/50 rounded-full" />
-                                    <span className="text-[10px] text-gray-400 font-medium">Cloud On</span>
-                                </>
-                            )}
-                        </>
-                    ) : (
-                        <>
-                            <div className="w-2 h-2 bg-gray-300 rounded-full" />
-                            <span className="text-[10px] text-gray-400 font-medium">Local Only</span>
-                        </>
-                    )}
-                </div>
-
                 <button onClick={resetProgress} className="text-gray-400 text-xs hover:text-red-500 font-medium px-2">
                     Reset
                 </button>
@@ -458,7 +429,7 @@ export default function NawinPath() {
 
             {showReminder && <ReminderSettings onClose={() => setShowReminder(false)} startDate={startDate} />}
 
-            <div className="space-y-12 flex flex-col-reverse">
+            <div className={`space-y-12 flex flex-col-reverse relative ${viewMode === 'grid' ? 'hidden' : 'block'}`}>
                 {nawinAttributes.map((attr, attrIndex) => (
                     <div key={attr.id} id={`stage-${attr.id}`} className="relative">
                         {/* Chapter Header */}
@@ -569,6 +540,86 @@ export default function NawinPath() {
                     </div>
                 ))}
             </div>
+
+            {viewMode === 'grid' && (
+                <div className="min-w-full flex justify-center overflow-x-auto pb-20 px-4">
+                    <div className="lg:min-w-2/3 w-full bg-white/60 backdrop-blur-sm rounded-2xl border border-white/40 shadow-sm overflow-hidden">
+                        {/* Table Header */}
+                        <div className="grid grid-cols-[120px_repeat(9,1fr)] bg-gray-50/80 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider text-center py-3 sticky top-0 z-10">
+                            <div className="px-4 text-left">Stage</div>
+                            {[...Array(9)].map((_, i) => (
+                                <div key={i}>{i + 1}</div>
+                            ))}
+                        </div>
+
+                        {/* Table Rows */}
+                        <div className="divide-y divide-gray-100">
+                            {nawinAttributes.map((attr) => (
+                                <div key={attr.id} className="grid grid-cols-[120px_repeat(9,1fr)] items-center hover:bg-white/40 transition-colors">
+                                    {/* Stage Header Details */}
+                                    <div className="p-3 pr-2 text-left border-r border-gray-100 bg-white/30">
+                                        <div className="flex flex-col items-center gap-2 mb-1">
+                                            <div className={`w-6 h-6 rounded-lg bg-gradient-to-br ${attr.color} flex items-center justify-center text-white text-xs font-bold shadow-sm flex-shrink-0`}>
+                                                {attr.id}
+                                            </div>
+                                            <h3 className="font-bold text-gray-800 text-xs truncate" title={attr.pali}>{attr.pali}</h3>
+                                        </div>
+                                        {/* <p className="text-[10px] text-gray-400 truncate leading-tight">{attr.meaning}</p> */}
+                                    </div>
+
+                                    {/* Days Cells */}
+                                    {[...Array(9)].map((_, i) => {
+                                        const col = i + 1;
+                                        const cellId = getCellId(attr.id, col);
+                                        const isDone = isClient && completedCells.includes(cellId);
+                                        const isUnlocked = isClient && isCellUnlocked(attr.id, col);
+                                        const isVeggie = col === 5;
+
+                                        // Calculate global day for data lookup
+                                        const globalDay = ((attr.id - 1) * 9) + col;
+                                        const dayInfo = getNawinDayInfo(globalDay);
+
+                                        return (
+                                            <div key={col} className="p-1 h-full flex justify-center items-center">
+                                                <motion.button
+                                                    whileTap={isUnlocked ? { scale: 0.95 } : {}}
+                                                    onClick={() => handleCellClick(attr.id, col)}
+                                                    className={`
+                                                    relative w-full h-20 rounded-lg flex flex-col items-center justify-center border transition-all
+                                                    ${isDone
+                                                            ? `bg-gradient-to-br ${attr.color} border-transparent text-white shadow-sm`
+                                                            : isUnlocked
+                                                                ? "bg-white border-blue-100 text-gray-800 hover:border-blue-300 hover:shadow-md"
+                                                                : "bg-gray-50 border-transparent text-gray-300"
+                                                        }
+                                                    ${isVeggie ? 'ring-2 ring-green-500 ring-offset-1' : ''}
+                                                `}
+                                                >
+
+                                                    {isDone ? (
+                                                        <Check size={16} strokeWidth={3} />
+                                                    ) : isUnlocked ? (
+                                                        <>
+                                                            <span className="text-xs font-bold leading-none w-2/3 leading-normal">{dayInfo.burmese}</span>
+                                                            <span className="text-[12px] opacity-80 font-medium mt-0.5">( {dayInfo.beads} ) ပတ်</span>
+                                                        </>
+                                                    ) : (
+                                                        <div className="flex items-center gap-1 flex-col">
+                                                            <span className="text-xs font-bold leading-normal">{dayInfo.burmese}</span>
+                                                            <span className="text-[12px] opacity-80 font-medium mt-0.5">( {dayInfo.beads} ) ပတ်</span>
+                                                        </div>
+                                                    )}
+                                                </motion.button>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div >
     );
 }

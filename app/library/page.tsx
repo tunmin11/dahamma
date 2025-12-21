@@ -17,7 +17,7 @@ export default function LibraryPage() {
         },
         {
             id: "patthana",
-            href: "/books/ပဋ္ဌာန်းပါဠိတော်.pdf",
+            href: "/pahtan",
             title: "Patthana Pali",
             subtitle: "Conditional Relations",
             nativeTitle: "ပဋ္ဌာန်းပါဠိတော်",
