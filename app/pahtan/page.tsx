@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { ChevronLeft, Plus, Minus } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import PahtanData from "../data/pahtan";
 
 export default function PahtanPage() {
+    const [fontSize, setFontSize] = useState(20); // Base font size in px
+
     return (
         <div className="min-h-screen bg-[#f8f5f2] text-gray-800 font-sans">
             <div className="w-full px-6 py-8 md:py-12">
@@ -44,7 +46,13 @@ export default function PahtanPage() {
                                     {section.header}
                                 </h2>
                             )}
-                            <div className="text-lg md:text-xl text-center leading-14 text-gray-700 font-medium whitespace-pre-line">
+                            <div
+                                className="text-lg md:text-xl text-center text-gray-700 font-medium whitespace-pre-line"
+                                style={{
+                                    fontSize: `${fontSize}px`,
+                                    lineHeight: '1.8'
+                                }}
+                            >
                                 {section.content.replaceAll("။", "။\n")}
                             </div>
                         </motion.div>
@@ -58,16 +66,26 @@ export default function PahtanPage() {
                 </div>
             </div>
 
-            {/* Auto Scroll Controls */}
-            <AutoScrollControls />
+            {/* Auto Scroll & Text Controls */}
+            <AutoScrollControls fontSize={fontSize} setFontSize={setFontSize} />
         </div>
     );
 }
 
-function AutoScrollControls() {
+function AutoScrollControls({
+    fontSize,
+    setFontSize
+}: {
+    fontSize: number;
+    setFontSize: (size: number | ((prev: number) => number)) => void
+}) {
     const [isScrolling, setIsScrolling] = useState(false);
     const [speed, setSpeed] = useState(1); // 1 = Slow, 1.5 = Medium-Slow, 2 = Medium, 3 = Fast
     const [showSpeedMenu, setShowSpeedMenu] = useState(false);
+
+    const adjustFontSize = (delta: number) => {
+        setFontSize(prev => Math.min(Math.max(prev + delta, 14), 48));
+    };
 
     // Use a ref to accumulate fractional scroll amounts
     const scrollAccumulator = useRef(0);
@@ -183,6 +201,31 @@ function AutoScrollControls() {
                             </motion.div>
                         )}
                     </AnimatePresence>
+                </div>
+
+                <div className="h-6 w-px bg-gray-200" />
+
+                <div className="flex items-center gap-1">
+                    <button
+                        onClick={() => adjustFontSize(-2)}
+                        className="p-1.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-amber-900 transition-colors"
+                        title="Decrease size"
+                    >
+                        <Minus size={16} />
+                    </button>
+
+                    <div className="flex flex-col items-center min-w-[32px]">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase leading-none mb-0.5">Size</span>
+                        <span className="text-xs font-bold text-amber-900 leading-none">{fontSize}</span>
+                    </div>
+
+                    <button
+                        onClick={() => adjustFontSize(2)}
+                        className="p-1.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-amber-900 transition-colors"
+                        title="Increase size"
+                    >
+                        <Plus size={16} />
+                    </button>
                 </div>
             </div>
         </motion.div>
