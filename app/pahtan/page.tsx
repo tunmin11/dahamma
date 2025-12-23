@@ -82,7 +82,7 @@ function AutoScrollControls() {
                 // Speed 1.5: ~0.75px/frame
                 // Speed 2: ~1.0px/frame
                 // Speed 3: ~2.0px/frame
-                const scrollSpeed = speed === 1 ? 0.5 : speed === 1.5 ? 0.75 : speed === 2 ? 1 : 2;
+                const scrollSpeed = speed === 1 ? 0.3 : speed === 1.5 ? 0.7 : speed === 2 ? 1.5 : 2;
 
                 // Add to accumulator
                 scrollAccumulator.current += scrollSpeed;
