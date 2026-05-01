@@ -18,31 +18,31 @@ export default function PahtanPage() {
                 >
                     <Link
                         href="/library"
-                        className="absolute left-0 top-1 p-2 -ml-2 text-gray-400 hover:text-amber-800 transition-colors rounded-full hover:bg-amber-100/50"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-1 text-sm font-black text-gray-500 hover:text-gray-800 bg-white/70 rounded-full px-3 py-1.5 border border-gray-100 transition-all"
                     >
-                        <ChevronLeft size={24} />
+                        <ChevronLeft size={16} />
+                        Back
                     </Link>
-                    <span className="text-xs font-bold tracking-[0.2em] text-amber-900/40 uppercase block mb-2">
+                    <span className="text-xs font-black tracking-[0.2em] text-gray-400 uppercase block mb-2">
                         Canonical Text
                     </span>
-                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-800 to-orange-700 bg-clip-text text-transparent pb-1">
+                    <h1 className="text-3xl md:text-4xl font-black text-gray-800 pb-1">
                         Maha Patthana
                     </h1>
-                    <p className="text-sm font-medium text-amber-900/60 mt-1">
+                    <p className="text-sm text-gray-400 mt-1">
                         ပဋ္ဌာန်းပါဠိတော်
                     </p>
-                    <div className="h-1 w-16 bg-gradient-to-r from-amber-200 to-orange-200 mx-auto mt-6 rounded-full" />
                 </motion.header>
 
                 {/* Content */}
-                <main className="space-y-8 bg-white/80">
+                <main className="space-y-4">
                     {PahtanData.map((section, index) => (
                         <motion.div
                             key={index}
-                            className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 md:p-8 hover:shadow-md transition-shadow duration-300"
+                            className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100"
                         >
                             {section.header && (
-                                <h2 className="text-xl text-center md:text-2xl font-bold text-amber-900 mb-6 font-serif leading-relaxed">
+                                <h2 className="text-xl text-center md:text-2xl font-black text-gray-800 mb-6 leading-relaxed">
                                     {section.header}
                                 </h2>
                             )}

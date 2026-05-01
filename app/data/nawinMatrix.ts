@@ -1,111 +1,151 @@
 export const NAWIN_DATA = {
-    "meta": {
-        "title": "Ko Nawin Ahtet Tan",
-        "description": "Based on the Blue Chart (Pagoda image)",
-        "total_stages": 9,
-        "days_per_stage": 9,
-        "days_sequence": ["day_1", "day_2", "day_3", "day_4", "day_5", "day_6", "day_7", "day_8", "day_9"],
-        "day_labels": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Day 8", "Day 9"]
+  "total_levels": 9,
+  "mantra_dictionary": {
+    "1": "အရဟံ",
+    "2": "သမ္မာသမ္ဗုဒ္ဓေါ",
+    "3": "ဝိဇ္ဇာစရဏ သမ္ပန္နော",
+    "4": "သုဂတော",
+    "5": "လောကဝိဒူ",
+    "6": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ",
+    "7": "သတ္ထာဒေဝ မနုဿာနံ",
+    "8": "ဗုဒ္ဓေါ",
+    "9": "ဘဂဝါ"
+  },
+  "levels": [
+    {
+      "level_id": 1,
+      "level_name": "ပထမအဆင့်",
+      "sessions": [
+        { "day": "တနင်္လာ", "mantra": "သမ္မာသမ္ဗုဒ္ဓေါ", "rounds": 2 },
+        { "day": "အင်္ဂါ", "mantra": "ဘဂဝါ", "rounds": 9 },
+        { "day": "ဗုဒ္ဓဟူး", "mantra": "သုဂတော", "rounds": 4 },
+        { "day": "ကြာသပတေး", "mantra": "သတ္ထာဒေဝ မနုဿာနံ", "rounds": 7 },
+        { "day": "သောကြာ", "mantra": "လောကဝိဒူ", "rounds": 5 },
+        { "day": "စနေ", "mantra": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "rounds": 3 },
+        { "day": "တနင်္ဂနွေ", "mantra": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "rounds": 6 },
+        { "day": "တနင်္လာ", "mantra": "အရဟံ", "rounds": 1 },
+        { "day": "အင်္ဂါ", "mantra": "ဗုဒ္ဓေါ", "rounds": 8 }
+      ]
     },
-    "stages": {
-        "1": {
-            "day_1": { "attribute": "Sammasambuddho", "burmese": "သမ္မာသမ္ဗုဒ္ဓေါ", "beads": 2 },
-            "day_2": { "attribute": "Bhagava", "burmese": "ဘဂဝါ", "beads": 9 },
-            "day_3": { "attribute": "Sugato", "burmese": "သုဂတော", "beads": 4 },
-            "day_4": { "attribute": "Sattha Deva", "burmese": "သတ္ထာဒေဝ မနုဿာနံ", "beads": 7 },
-            "day_5": { "attribute": "Lokavidu", "burmese": "လောကဝိဒူ", "beads": 5 },
-            "day_6": { "attribute": "Vijja Carana", "burmese": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "beads": 3 },
-            "day_7": { "attribute": "Anuttaro", "burmese": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "beads": 6 },
-            "day_8": { "attribute": "Araham", "burmese": "အရဟံ", "beads": 1 },
-            "day_9": { "attribute": "Buddho", "burmese": "ဗုဒ္ဓေါ", "beads": 8 }
-        },
-        "2": {
-            "day_1": { "attribute": "Vijja Carana", "burmese": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "beads": 3 },
-            "day_2": { "attribute": "Araham", "burmese": "အရဟံ", "beads": 1 },
-            "day_3": { "attribute": "Lokavidu", "burmese": "လောကဝိဒူ", "beads": 5 },
-            "day_4": { "attribute": "Buddho", "burmese": "ဗုဒ္ဓေါ", "beads": 8 },
-            "day_5": { "attribute": "Anuttaro", "burmese": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "beads": 6 },
-            "day_6": { "attribute": "Sugato", "burmese": "သုဂတော", "beads": 4 },
-            "day_7": { "attribute": "Sattha Deva", "burmese": "သတ္ထာဒေဝ မနုဿာနံ", "beads": 7 },
-            "day_8": { "attribute": "Sammasambuddho", "burmese": "သမ္မာသမ္ဗုဒ္ဓေါ", "beads": 2 },
-            "day_9": { "attribute": "Bhagava", "burmese": "ဘဂဝါ", "beads": 9 }
-        },
-        "3": {
-            "day_1": { "attribute": "Sugato", "burmese": "သုဂတော", "beads": 4 },
-            "day_2": { "attribute": "Sammasambuddho", "burmese": "သမ္မာသမ္ဗုဒ္ဓေါ", "beads": 2 },
-            "day_3": { "attribute": "Anuttaro", "burmese": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "beads": 6 },
-            "day_4": { "attribute": "Bhagava", "burmese": "ဘဂဝါ", "beads": 9 },
-            "day_5": { "attribute": "Sattha Deva", "burmese": "သတ္ထာဒေဝ မနုဿာနံ", "beads": 7 },
-            "day_6": { "attribute": "Lokavidu", "burmese": "လောကဝိဒူ", "beads": 5 },
-            "day_7": { "attribute": "Buddho", "burmese": "ဗုဒ္ဓေါ", "beads": 8 },
-            "day_8": { "attribute": "Vijja Carana", "burmese": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "beads": 3 },
-            "day_9": { "attribute": "Araham", "burmese": "အရဟံ", "beads": 1 }
-        },
-        "4": {
-            "day_1": { "attribute": "Buddho", "burmese": "ဗုဒ္ဓေါ", "beads": 9 },
-            "day_2": { "attribute": "Vijja Carana", "burmese": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "beads": 3 },
-            "day_3": { "attribute": "Anuttaro", "burmese": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "beads": 1 },
-            "day_4": { "attribute": "Araham", "burmese": "အရဟံ", "beads": 12 },
-            "day_5": { "attribute": "Sattha Deva", "burmese": "သတ္ထာဒေဝ မနုဿာနံ", "beads": 5 },
-            "day_6": { "attribute": "Sammasambuddho", "burmese": "သမ္မာသမ္ဗုဒ္ဓေါ", "beads": 2 },
-            "day_7": { "attribute": "Bhagava", "burmese": "ဘဂဝါ", "beads": 9 },
-            "day_8": { "attribute": "Sugato", "burmese": "သုဂတော", "beads": 4 },
-            "day_9": { "attribute": "Lokavidu", "burmese": "လောကဝိဒူ", "beads": 6 }
-        },
-        "5": {
-            "day_1": { "attribute": "Araham", "burmese": "အရဟံ", "beads": 12 },
-            "day_2": { "attribute": "Sammasambuddho", "burmese": "သမ္မာသမ္ဗုဒ္ဓေါ", "beads": 2 },
-            "day_3": { "attribute": "Bhagava", "burmese": "ဘဂဝါ", "beads": 9 },
-            "day_4": { "attribute": "Sugato", "burmese": "သုဂတော", "beads": 4 },
-            "day_5": { "attribute": "Anuttaro", "burmese": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "beads": 1 },
-            "day_6": { "attribute": "Lokavidu", "burmese": "လောကဝိဒူ", "beads": 6 },
-            "day_7": { "attribute": "Vijja Carana", "burmese": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "beads": 3 },
-            "day_8": { "attribute": "Buddho", "burmese": "ဗုဒ္ဓေါ", "beads": 9 },
-            "day_9": { "attribute": "Sattha Deva", "burmese": "သတ္ထာဒေဝ မနုဿာနံ", "beads": 5 }
-        },
-        "6": {
-            "day_1": { "attribute": "Vijja Carana", "burmese": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "beads": 3 },
-            "day_2": { "attribute": "Lokavidu", "burmese": "လောကဝိဒူ", "beads": 6 },
-            "day_3": { "attribute": "Sattha Deva", "burmese": "သတ္ထာဒေဝ မနုဿာနံ", "beads": 5 },
-            "day_4": { "attribute": "Buddho", "burmese": "ဗုဒ္ဓေါ", "beads": 9 },
-            "day_5": { "attribute": "Sammasambuddho", "burmese": "သမ္မာသမ္ဗုဒ္ဓေါ", "beads": 2 },
-            "day_6": { "attribute": "Araham", "burmese": "အရဟံ", "beads": 12 },
-            "day_7": { "attribute": "Sugato", "burmese": "သုဂတော", "beads": 4 },
-            "day_8": { "attribute": "Anuttaro", "burmese": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "beads": 1 },
-            "day_9": { "attribute": "Bhagava", "burmese": "ဘဂဝါ", "beads": 9 }
-        },
-        "7": {
-            "day_1": { "attribute": "Sugato", "burmese": "သုဂတော", "beads": 4 },
-            "day_2": { "attribute": "Anuttaro", "burmese": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "beads": 1 },
-            "day_3": { "attribute": "Araham", "burmese": "အရဟံ", "beads": 12 },
-            "day_4": { "attribute": "Bhagava", "burmese": "ဘဂဝါ", "beads": 9 },
-            "day_5": { "attribute": "Vijja Carana", "burmese": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "beads": 3 },
-            "day_6": { "attribute": "Sattha Deva", "burmese": "သတ္ထာဒေဝ မနုဿာနံ", "beads": 5 },
-            "day_7": { "attribute": "Buddho", "burmese": "ဗုဒ္ဓေါ", "beads": 9 },
-            "day_8": { "attribute": "Lokavidu", "burmese": "လောကဝိဒူ", "beads": 6 },
-            "day_9": { "attribute": "Sammasambuddho", "burmese": "သမ္မာသမ္ဗုဒ္ဓေါ", "beads": 2 }
-        },
-        "8": {
-            "day_1": { "attribute": "Anuttaro", "burmese": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "beads": 1 },
-            "day_2": { "attribute": "Buddho", "burmese": "ဗုဒ္ဓေါ", "beads": 9 },
-            "day_3": { "attribute": "Sammasambuddho", "burmese": "သမ္မာသမ္ဗုဒ္ဓေါ", "beads": 2 },
-            "day_4": { "attribute": "Lokavidu", "burmese": "လောကဝိဒူ", "beads": 6 },
-            "day_5": { "attribute": "Sugato", "burmese": "သုဂတော", "beads": 4 },
-            "day_6": { "attribute": "Bhagava", "burmese": "ဘဂဝါ", "beads": 9 },
-            "day_7": { "attribute": "Araham", "burmese": "အရဟံ", "beads": 12 },
-            "day_8": { "attribute": "Sattha Deva", "burmese": "သတ္ထာဒေဝ မနုဿာနံ", "beads": 5 },
-            "day_9": { "attribute": "Vijja Carana", "burmese": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "beads": 3 }
-        },
-        "9": {
-            "day_1": { "attribute": "Bhagava", "burmese": "ဘဂဝါ", "beads": 9 },
-            "day_2": { "attribute": "Sattha Deva", "burmese": "သတ္ထာဒေဝ မနုဿာနံ", "beads": 5 },
-            "day_3": { "attribute": "Lokavidu", "burmese": "လောကဝိဒူ", "beads": 6 },
-            "day_4": { "attribute": "Vijja Carana", "burmese": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "beads": 3 },
-            "day_5": { "attribute": "Araham", "burmese": "အရဟံ", "beads": 12 },
-            "day_6": { "attribute": "Sammasambuddho", "burmese": "သမ္မာသမ္ဗုဒ္ဓေါ", "beads": 2 },
-            "day_7": { "attribute": "Anuttaro", "burmese": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "beads": 1 },
-            "day_8": { "attribute": "Buddho", "burmese": "ဗုဒ္ဓေါ", "beads": 9 },
-            "day_9": { "attribute": "Sugato", "burmese": "သုဂတော", "beads": 4 }
-        }
+    {
+      "level_id": 2,
+      "level_name": "ဒုတိယအဆင့်",
+      "sessions": [
+        { "day": "ဗုဒ္ဓဟူး", "mantra": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "rounds": 3 },
+        { "day": "ကြာသပတေး", "mantra": "အရဟံ", "rounds": 1 },
+        { "day": "သောကြာ", "mantra": "လောကဝိဒူ", "rounds": 5 },
+        { "day": "စနေ", "mantra": "ဗုဒ္ဓေါ", "rounds": 8 },
+        { "day": "တနင်္ဂနွေ", "mantra": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "rounds": 6 },
+        { "day": "တနင်္လာ", "mantra": "သုဂတော", "rounds": 4 },
+        { "day": "အင်္ဂါ", "mantra": "သတ္ထာဒေဝ မနုဿာနံ", "rounds": 7 },
+        { "day": "ဗုဒ္ဓဟူး", "mantra": "သမ္မာသမ္ဗုဒ္ဓေါ", "rounds": 2 },
+        { "day": "ကြာသပတေး", "mantra": "ဘဂဝါ", "rounds": 9 }
+      ]
+    },
+    {
+      "level_id": 3,
+      "level_name": "တတိယအဆင့်",
+      "sessions": [
+        { "day": "သောကြာ", "mantra": "သုဂတော", "rounds": 4 },
+        { "day": "စနေ", "mantra": "သမ္မာသမ္ဗုဒ္ဓေါ", "rounds": 2 },
+        { "day": "တနင်္ဂနွေ", "mantra": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "rounds": 6 },
+        { "day": "တနင်္လာ", "mantra": "ဘဂဝါ", "rounds": 9 },
+        { "day": "အင်္ဂါ", "mantra": "သတ္ထာဒေဝ မနုဿာနံ", "rounds": 7 },
+        { "day": "ဗုဒ္ဓဟူး", "mantra": "လောကဝိဒူ", "rounds": 5 },
+        { "day": "ကြာသပတေး", "mantra": "ဗုဒ္ဓေါ", "rounds": 8 },
+        { "day": "သောကြာ", "mantra": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "rounds": 3 },
+        { "day": "စနေ", "mantra": "အရဟံ", "rounds": 1 }
+      ]
+    },
+    {
+      "level_id": 4,
+      "level_name": "စတုတ္ထအဆင့်",
+      "sessions": [
+        { "day": "တနင်္ဂနွေ", "mantra": "လောကဝိဒူ", "rounds": 5 },
+        { "day": "တနင်္လာ", "mantra": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "rounds": 3 },
+        { "day": "အင်္ဂါ", "mantra": "သတ္ထာဒေဝ မနုဿာနံ", "rounds": 7 },
+        { "day": "ဗုဒ္ဓဟူး", "mantra": "အရဟံ", "rounds": 1 },
+        { "day": "ကြာသပတေး", "mantra": "ဗုဒ္ဓေါ", "rounds": 8 },
+        { "day": "သောကြာ", "mantra": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "rounds": 6 },
+        { "day": "စနေ", "mantra": "ဘဂဝါ", "rounds": 9 },
+        { "day": "တနင်္ဂနွေ", "mantra": "သုဂတော", "rounds": 4 },
+        { "day": "တနင်္လာ", "mantra": "သမ္မာသမ္ဗုဒ္ဓေါ", "rounds": 2 }
+      ]
+    },
+    {
+      "level_id": 5,
+      "level_name": "ပဉ္စမအဆင့်",
+      "sessions": [
+        { "day": "အင်္ဂါ", "mantra": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "rounds": 6 },
+        { "day": "ဗုဒ္ဓဟူး", "mantra": "သုဂတော", "rounds": 4 },
+        { "day": "ကြာသပတေး", "mantra": "ဗုဒ္ဓေါ", "rounds": 8 },
+        { "day": "သောကြာ", "mantra": "သမ္မာသမ္ဗုဒ္ဓေါ", "rounds": 2 },
+        { "day": "စနေ", "mantra": "ဘဂဝါ", "rounds": 9 },
+        { "day": "တနင်္ဂနွေ", "mantra": "သတ္ထာဒေဝ မနုဿာနံ", "rounds": 7 },
+        { "day": "တနင်္လာ", "mantra": "အရဟံ", "rounds": 1 },
+        { "day": "အင်္ဂါ", "mantra": "လောကဝိဒူ", "rounds": 5 },
+        { "day": "ဗုဒ္ဓဟူး", "mantra": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "rounds": 3 }
+      ]
+    },
+    {
+      "level_id": 6,
+      "level_name": "ဆဋ္ဌမအဆင့်",
+      "sessions": [
+        { "day": "ကြာသပတေး", "mantra": "သတ္ထာဒေဝ မနုဿာနံ", "rounds": 7 },
+        { "day": "သောကြာ", "mantra": "လောကဝိဒူ", "rounds": 5 },
+        { "day": "စနေ", "mantra": "ဘဂဝါ", "rounds": 9 },
+        { "day": "တနင်္ဂနွေ", "mantra": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "rounds": 3 },
+        { "day": "တနင်္လာ", "mantra": "အရဟံ", "rounds": 1 },
+        { "day": "အင်္ဂါ", "mantra": "ဗုဒ္ဓေါ", "rounds": 8 },
+        { "day": "ဗုဒ္ဓဟူး", "mantra": "သမ္မာသမ္ဗုဒ္ဓေါ", "rounds": 2 },
+        { "day": "ကြာသပတေး", "mantra": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "rounds": 6 },
+        { "day": "သောကြာ", "mantra": "သုဂတော", "rounds": 4 }
+      ]
+    },
+    {
+      "level_id": 7,
+      "level_name": "သတ္တမအဆင့်",
+      "sessions": [
+        { "day": "စနေ", "mantra": "ဗုဒ္ဓေါ", "rounds": 8 },
+        { "day": "တနင်္ဂနွေ", "mantra": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "rounds": 6 },
+        { "day": "တနင်္လာ", "mantra": "အရဟံ", "rounds": 1 },
+        { "day": "အင်္ဂါ", "mantra": "သုဂတော", "rounds": 4 },
+        { "day": "ဗုဒ္ဓဟူး", "mantra": "သမ္မာသမ္ဗုဒ္ဓေါ", "rounds": 2 },
+        { "day": "ကြာသပတေး", "mantra": "ဘဂဝါ", "rounds": 9 },
+        { "day": "သောကြာ", "mantra": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "rounds": 3 },
+        { "day": "စနေ", "mantra": "သတ္ထာဒေဝ မနုဿာနံ", "rounds": 7 },
+        { "day": "တနင်္ဂနွေ", "mantra": "လောကဝိဒူ", "rounds": 5 }
+      ]
+    },
+    {
+      "level_id": 8,
+      "level_name": "အဋ္ဌမအဆင့်",
+      "sessions": [
+        { "day": "တနင်္လာ", "mantra": "ဘဂဝါ", "rounds": 9 },
+        { "day": "အင်္ဂါ", "mantra": "သတ္ထာဒေဝ မနုဿာနံ", "rounds": 7 },
+        { "day": "ဗုဒ္ဓဟူး", "mantra": "သမ္မာသမ္ဗုဒ္ဓေါ", "rounds": 2 },
+        { "day": "ကြာသပတေး", "mantra": "လောကဝိဒူ", "rounds": 5 },
+        { "day": "သောကြာ", "mantra": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "rounds": 3 },
+        { "day": "စနေ", "mantra": "အရဟံ", "rounds": 1 },
+        { "day": "တနင်္ဂနွေ", "mantra": "သုဂတော", "rounds": 4 },
+        { "day": "တနင်္လာ", "mantra": "ဗုဒ္ဓေါ", "rounds": 8 },
+        { "day": "အင်္ဂါ", "mantra": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "rounds": 6 }
+      ]
+    },
+    {
+      "level_id": 9,
+      "level_name": "နဝမအဆင့်",
+      "sessions": [
+        { "day": "ဗုဒ္ဓဟူး", "mantra": "အရဟံ", "rounds": 1 },
+        { "day": "ကြာသပတေး", "mantra": "ဗုဒ္ဓေါ", "rounds": 8 },
+        { "day": "သောကြာ", "mantra": "ဝိဇ္ဇာစရဏ သမ္ပန္နော", "rounds": 3 },
+        { "day": "စနေ", "mantra": "အနုတ္တရော ပုရိသ ဓမ္မသာရထိ", "rounds": 6 },
+        { "day": "တနင်္ဂနွေ", "mantra": "သုဂတော", "rounds": 4 },
+        { "day": "တနင်္လာ", "mantra": "သမ္မာသမ္ဗုဒ္ဓေါ", "rounds": 2 },
+        { "day": "အင်္ဂါ", "mantra": "လောကဝိဒူ", "rounds": 5 },
+        { "day": "ဗုဒ္ဓဟူး", "mantra": "ဘဂဝါ", "rounds": 9 },
+        { "day": "ကြာသပတေး", "mantra": "သတ္ထာဒေဝ မနုဿာနံ", "rounds": 7 }
+      ]
     }
+  ]
 } as const;

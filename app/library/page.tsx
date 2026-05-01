@@ -41,19 +41,20 @@ export default function LibraryPage() {
             <motion.header
                 className="mt-4 mb-8 text-center relative"
             >
-                <Link href="/" className="absolute left-0 top-2 text-gray-400 hover:text-black transition-colors">
-                    <ChevronLeft size={24} />
+                <Link href="/" className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-1 text-sm font-black text-gray-500 hover:text-gray-800 bg-white/70 rounded-full px-3 py-1.5 border border-gray-100 transition-all">
+                    <ChevronLeft size={16} />
+                    Back
                 </Link>
-                <span className="text-xs font-bold tracking-[0.3em] text-orange-900/60 uppercase">
+                <span className="text-xs font-black tracking-[0.3em] text-gray-400 uppercase">
                     Archive
                 </span>
-                <h1 className="text-3xl md:text-4xl font-bold mt-2 bg-gradient-to-br from-orange-800 via-orange-700 to-amber-800 bg-clip-text text-transparent">
+                <h1 className="text-3xl md:text-4xl font-black mt-2 text-gray-800">
                     Dhamma Library
                 </h1>
             </motion.header>
 
             <main className="flex-1">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 justify-items-center">
                     {books.map((book, index) => (
                         <Link key={book.id} href={book.href}>
                             <motion.div
@@ -62,7 +63,7 @@ export default function LibraryPage() {
                                 className="group relative flex flex-col items-center cursor-pointer"
                             >
                                 {/* Book Cover Container */}
-                                <div className="relative w-48 aspect-[2/3] md:w-56 rounded-r-lg rounded-l-sm transition-all duration-300 group-hover:shadow-2xl">
+                                <div className="relative w-48 aspect-[2/3] md:w-56 rounded-r-lg rounded-l-sm transition-all duration-300">
                                     {/* Spine Effect */}
                                     <div className="absolute left-0 top-0 bottom-0 w-2 rounded-l-sm mix-blend-overlay" />
 
@@ -78,11 +79,11 @@ export default function LibraryPage() {
                                 </div>
 
                                 {/* Metadata below book */}
-                                <div className="mt-1 text-center">
-                                    <h2 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-amber-800 transition-colors">
+                                <div className="mt-3 text-center">
+                                    <h2 className="text-base font-black text-gray-800 mb-0.5">
                                         {book.nativeTitle}
                                     </h2>
-                                    <p className="text-sm text-gray-500 font-medium">
+                                    <p className="text-xs text-gray-400">
                                         {book.title}
                                     </p>
                                 </div>

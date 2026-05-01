@@ -1,46 +1,82 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
+import { LogOut } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useEffect, useState } from "react";
-import { LogIn, LogOut } from "lucide-react";
 
 export default function Login() {
     const { user, googleSignIn, logOut } = useAuth();
     // Ensure hydration matches by waiting for mount
     const [mounted, setMounted] = useState(false);
+    const [showPopover, setShowPopover] = useState(false);
+    const popoverRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    // Close popover on outside click
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+                setShowPopover(false);
+            }
+        }
+        if (showPopover) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [showPopover]);
 
     if (!mounted) return null;
 
     return (
         <div className="flex items-center gap-4">
             {user ? (
-                <div className="flex items-center gap-3">
-                    <div className="hidden md:block text-right">
-                        <p className="text-sm font-medium text-gray-700">
-                            {user.displayName}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                            {user.email}
-                        </p>
-                    </div>
-                    {user.photoURL && (
-                        <img
-                            src={user.photoURL}
-                            alt={user.displayName || "User"}
-                            className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
-                        />
-                    )}
+                <div className="relative" ref={popoverRef}>
                     <button
-                        onClick={logOut}
-                        className="p-2 rounded-full cursor-pointer hover:bg-gray-100 transition-all text-gray-600 hover:text-red-500"
-                        title="Sign Out"
+                        onClick={() => setShowPopover((prev) => !prev)}
+                        className="cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 transition-transform hover:scale-105"
                     >
-                        <LogOut size={20} />
+                        {user.photoURL ? (
+                            <Image
+                                width={40}
+                                height={40}
+                                src={user.photoURL}
+                                alt={user.displayName || "User"}
+                                className="w-10 h-10 rounded-full border-2 border-amber-400 shadow-sm"
+                            />
+                        ) : (
+                            <div className="w-10 h-10 rounded-full border-2 border-amber-400 bg-amber-100 flex items-center justify-center text-amber-700 font-semibold text-sm">
+                                {user.displayName?.[0]?.toUpperCase() || "U"}
+                            </div>
+                        )}
                     </button>
+
+                    {showPopover && (
+                        <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50 animate-in fade-in slide-in-from-top-1">
+                            <div className="px-4 py-3 border-b border-gray-100">
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                    {user.displayName || "User"}
+                                </p>
+                                <p className="text-xs text-gray-500 truncate">
+                                    {user.email}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    setShowPopover(false);
+                                    logOut();
+                                }}
+                                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                            >
+                                <LogOut size={16} />
+                                <span>Sign Out</span>
+                            </button>
+                        </div>
+                    )}
                 </div>
             ) : (
                 <button

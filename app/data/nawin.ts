@@ -14,7 +14,7 @@ export const nawinAttributes: NawinAttribute[] = [
         meaning: "First Stage",
         description: "Ko Nawin Journey - Stage 1",
         requiredCounts: 108 * 9,
-        color: "from-blue-500 to-indigo-600",
+        color: "from-gray-600 to-gray-700",
     },
     {
         id: 2,
@@ -22,7 +22,7 @@ export const nawinAttributes: NawinAttribute[] = [
         meaning: "Second Stage",
         description: "Ko Nawin Journey - Stage 2",
         requiredCounts: 108 * 9,
-        color: "from-indigo-500 to-purple-600",
+        color: "from-gray-600 to-gray-700",
     },
     {
         id: 3,
@@ -30,7 +30,7 @@ export const nawinAttributes: NawinAttribute[] = [
         meaning: "Third Stage",
         description: "Ko Nawin Journey - Stage 3",
         requiredCounts: 108 * 9,
-        color: "from-purple-500 to-fuchsia-600",
+        color: "from-gray-700 to-gray-800",
     },
     {
         id: 4,
@@ -38,7 +38,7 @@ export const nawinAttributes: NawinAttribute[] = [
         meaning: "Fourth Stage",
         description: "Ko Nawin Journey - Stage 4",
         requiredCounts: 108 * 9,
-        color: "from-fuchsia-500 to-pink-600",
+        color: "from-gray-700 to-gray-800",
     },
     {
         id: 5,
@@ -46,7 +46,7 @@ export const nawinAttributes: NawinAttribute[] = [
         meaning: "Fifth Stage",
         description: "Ko Nawin Journey - Stage 5",
         requiredCounts: 108 * 9,
-        color: "from-pink-500 to-rose-600",
+        color: "from-stone-600 to-stone-700",
     },
     {
         id: 6,
@@ -54,7 +54,7 @@ export const nawinAttributes: NawinAttribute[] = [
         meaning: "Sixth Stage",
         description: "Ko Nawin Journey - Stage 6",
         requiredCounts: 108 * 9,
-        color: "from-rose-500 to-red-600",
+        color: "from-stone-600 to-stone-700",
     },
     {
         id: 7,
@@ -62,7 +62,7 @@ export const nawinAttributes: NawinAttribute[] = [
         meaning: "Seventh Stage",
         description: "Ko Nawin Journey - Stage 7",
         requiredCounts: 108 * 9,
-        color: "from-red-500 to-orange-600",
+        color: "from-stone-700 to-stone-800",
     },
     {
         id: 8,
@@ -70,7 +70,7 @@ export const nawinAttributes: NawinAttribute[] = [
         meaning: "Eighth Stage",
         description: "Ko Nawin Journey - Stage 8",
         requiredCounts: 108 * 9,
-        color: "from-orange-500 to-amber-600",
+        color: "from-gray-800 to-gray-900",
     },
     {
         id: 9,
@@ -78,6 +78,6 @@ export const nawinAttributes: NawinAttribute[] = [
         meaning: "Ninth Stage",
         description: "Ko Nawin Journey - Stage 9",
         requiredCounts: 108 * 9,
-        color: "from-amber-500 to-yellow-600",
+        color: "from-gray-800 to-gray-900",
     },
 ];

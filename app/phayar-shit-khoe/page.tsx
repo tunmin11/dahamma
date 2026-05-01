@@ -13,30 +13,30 @@ export default function PhayarShitKhoePage() {
                 animate={{ y: 0, opacity: 1 }}
                 className="mb-8 pt-4 text-center relative"
             >
-                <Link href="/library" className="absolute left-0 top-6 text-gray-400 hover:text-black transition-colors">
-                    <ChevronLeft size={24} />
+                <Link href="/library" className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-1 text-sm font-black text-gray-500 hover:text-gray-800 bg-white/70 rounded-full px-3 py-1.5 border border-gray-100 transition-all">
+                    <ChevronLeft size={16} />
+                    Back
                 </Link>
-                <span className="text-xs font-bold tracking-[0.2em] text-orange-900/60 uppercase">
+                <span className="text-xs font-black tracking-[0.2em] text-gray-400 uppercase">
                     Vajira Panjaram
                 </span>
-                <h1 className="text-3xl font-bold mt-2 bg-gradient-to-r from-orange-800 to-amber-700 bg-clip-text text-transparent leading-relaxed py-1">
+                <h1 className="text-3xl font-black mt-2 text-gray-800 leading-relaxed py-1">
                     ဘုရားရှိခိုး
                 </h1>
-                <div className="h-1 w-12 bg-orange-200 mx-auto mt-4 rounded-full" />
             </motion.header>
 
-            <div className="lg:grid lg:grid-cols-[300px,1fr] lg:gap-12 lg:items-start max-w-7xl mx-auto">
+            <div className="lg:grid lg:grid-cols-[260px,1fr] lg:gap-12 lg:items-start max-w-7xl mx-auto">
                 {/* Desktop Sidebar */}
-                <aside className="hidden lg:block sticky top-8 h-[calc(100vh-4rem)] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-orange-200 scrollbar-track-transparent">
-                    <nav className="space-y-1">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 px-3">
+                <aside className="hidden lg:block sticky top-8 h-[calc(100vh-4rem)] overflow-y-auto pr-4">
+                    <nav className="space-y-0.5">
+                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-4 px-3">
                             Contents
                         </h3>
                         {phayarShitKhoe.map((section, index) => (
                             <a
                                 key={index}
                                 href={`#section-${index}`}
-                                className="block px-3 py-2 text-sm text-gray-600 hover:text-orange-800 hover:bg-orange-50 rounded-lg transition-colors font-myanmar truncate"
+                                className="block px-3 py-2 text-sm text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors truncate"
                             >
                                 {section.title}
                             </a>
@@ -45,7 +45,7 @@ export default function PhayarShitKhoePage() {
                 </aside>
 
                 <main className="pb-32">
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                         {phayarShitKhoe.map((section, index) => (
                             <motion.div
                                 key={index}
@@ -53,13 +53,13 @@ export default function PhayarShitKhoePage() {
                                 initial={{ opacity: 0, y: 10 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, margin: "-50px" }}
-                                transition={{ delay: index * 0.05 }}
-                                className="bg-white/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-sm border border-stone-100 scroll-mt-24"
+                                transition={{ delay: index * 0.03 }}
+                                className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 scroll-mt-24"
                             >
-                                <h2 className="text-xl font-bold text-amber-800 mb-4 text-center font-myanmar">
+                                <h2 className="text-lg font-black text-gray-800 mb-4 text-center">
                                     {section.title}
                                 </h2>
-                                <p className="text-lg pt-4 leading-loose text-center text-gray-700 font-medium font-myanmar whitespace-pre-line">
+                                <p className="text-lg pt-2 leading-loose text-center text-gray-600 whitespace-pre-line">
                                     {section.content}
                                 </p>
                             </motion.div>

@@ -1,76 +1,173 @@
 "use client";
 
-import Link from "next/link";
+import { doc, getDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
-import { Book, Stars } from "lucide-react";
+import { Book, Leaf, Star } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import InstallPrompt from "./components/InstallPrompt";
+import { useAuth } from "./context/AuthContext";
+import { db } from "./firebase/config";
+import { getNawinDayInfo } from "./utils/nawinLogic";
 
 export default function Home() {
-  return (
-    <div className="min-h-screen text-gray-800 p-6 md:p-8 max-w-4xl mx-auto flex flex-col justify-center">
-      <motion.header
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="mb-12 text-center"
-      >
-        <span className="text-xs font-bold tracking-[0.3em] text-orange-900/60 uppercase">
-          Sayadaw U Vicittasarabhivamsa
-        </span>
-        <h1 className="text-4xl md:text-5xl font-bold mt-3 bg-gradient-to-br from-orange-800 via-orange-700 to-amber-800 bg-clip-text text-transparent">
-          Dhamma App
-        </h1>
-        <p className="text-gray-500 mt-4 text-sm font-light tracking-wide">
-          Choose a path to begin
-        </p>
-      </motion.header>
+    const { user } = useAuth();
+    const [completedCount, setCompletedCount] = useState(0);
+    const [hasStarted, setHasStarted] = useState(false);
+    const [isClient, setIsClient] = useState(false);
 
-      <main className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto w-full">
-        {/* Library Card */}
-        <Link href="/library">
-          <motion.div
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
-            className="group relative bg-white border border-orange-200 rounded-2xl p-8 flex flex-col items-center text-center h-full hover:border-orange-400 transition-colors shadow-xl shadow-orange-900/5 hover:shadow-2xl hover:shadow-orange-900/10"
-          >
-            <div className="p-4 rounded-full bg-orange-50 text-orange-600 mb-6 group-hover:bg-orange-100 transition-colors">
-              <Book size={40} />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Library</h2>
-            <p className="text-gray-500 text-sm">
-              Access the complete collection of Suttas, Parittas, and Chants.
-            </p>
-          </motion.div>
-        </Link>
+    useEffect(() => {
+        setIsClient(true);
+        const localDate = localStorage.getItem("nawin_startDate");
+        const localCompleted = localStorage.getItem("nawin_completedCells");
+        if (localDate) {
+            setHasStarted(true);
+            if (localCompleted) setCompletedCount(JSON.parse(localCompleted).length);
+        }
+    }, []);
 
-        {/* Nawin Card */}
-        <Link href="/nawin">
-          <motion.div
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
-            className="group relative bg-white border border-blue-200 rounded-2xl p-8 flex flex-col items-center text-center h-full hover:border-blue-400 transition-colors shadow-xl shadow-blue-900/5 hover:shadow-2xl hover:shadow-blue-900/10"
-          >
-            <div className="p-4 rounded-full bg-blue-50 text-blue-600 mb-6 group-hover:bg-blue-100 transition-colors">
-              <Stars size={40} />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Ko Nawin</h2>
-            <p className="text-gray-500 text-sm">
-              Special rituals and 9 Attributes for protection and fulfilling wishes.
-            </p>
-          </motion.div>
-        </Link>
-      </main>
+    useEffect(() => {
+        if (!user) return;
+        const fetchCloud = async () => {
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (snap.exists()) {
+                    const data = snap.data();
+                    if (data.nawinStartDate) {
+                        setHasStarted(true);
+                        if (data.nawinCompleted) setCompletedCount(data.nawinCompleted.length);
+                    }
+                }
+            } catch {
+                // fall back to localStorage
+            }
+        };
+        fetchCloud();
+    }, [user]);
 
-      <footer className="mt-16 text-center text-gray-400 text-xs py-8">
-        <p>© {new Date().getFullYear()} Dhamma Project</p>
-      </footer>
+    const isAllDone = completedCount >= 81;
+    const nextDayNumber = Math.min(81, completedCount + 1);
+    const nextDayInfo = isClient && hasStarted && !isAllDone ? getNawinDayInfo(nextDayNumber) : null;
+    const isVeggieDay = nextDayInfo ? ((nextDayNumber - 1) % 9) + 1 === 5 : false;
 
-      <InstallPrompt />
-    </div>
-  );
+    return (
+        <div className="min-h-screen p-6 md:p-8 max-w-2xl mx-auto flex flex-col justify-center">
+
+            {/* Header */}
+            <motion.header
+                initial={{ opacity: 0, y: -12 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-10 text-center"
+            >
+                <h1 className="text-3xl font-black mt-2 text-gray-800">ကိုးနဝင်း</h1>
+            </motion.header>
+
+            {/* ── Next step card ─────────────────────────────────────────── */}
+            {nextDayInfo && (
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 }}
+                    className="mb-5"
+                >
+                    <Link href="/nawin">
+                        <div className="bg-gray-900 rounded-2xl p-5 text-white">
+                            <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                                            Day {nextDayNumber} · Level {nextDayInfo.level}
+                                        </span>
+                                        {isVeggieDay && (
+                                            <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-green-400">
+                                                <Leaf size={9} fill="currentColor" />
+                                                Veggie Day
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-xl font-black leading-snug">{nextDayInfo.mantra}</p>
+                                    <p className="text-sm text-gray-500 mt-1">{nextDayInfo.dayLabel}</p>
+                                </div>
+
+                                <div className="shrink-0 text-right">
+                                    <p className="text-2xl font-black">{nextDayInfo.rounds}</p>
+                                    <p className="text-[10px] text-gray-500 uppercase tracking-wide">rounds</p>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 w-full h-[2px] bg-gray-800 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-gray-500 rounded-full transition-all duration-700"
+                                    style={{ width: `${(completedCount / 81) * 100}%` }}
+                                />
+                            </div>
+                            <div className="flex justify-between mt-1.5">
+                                <span className="text-[10px] text-gray-600">ကိုးနဝင်း</span>
+                                <span className="text-[10px] text-gray-600">{completedCount} / 81</span>
+                            </div>
+                        </div>
+                    </Link>
+                </motion.div>
+            )}
+
+            {/* All done */}
+            {isClient && isAllDone && (
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-5 bg-gray-900 rounded-2xl p-5 text-center"
+                >
+                    <p className="font-black text-lg text-white">ကိုးနဝင်း — ပြီးဆုံးပါပြီ</p>
+                    <p className="text-sm text-gray-500 mt-1">All 81 days complete.</p>
+                </motion.div>
+            )}
+
+            {/* ── Cards ──────────────────────────────────────────────────── */}
+            <main className="grid grid-cols-2 gap-4">
+
+                <Link href="/library">
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col items-center text-center hover:border-gray-300 transition-colors"
+                    >
+                        <div className="w-11 h-11 rounded-xl bg-stone-100 flex items-center justify-center mb-3 text-stone-500">
+                            <Book size={22} />
+                        </div>
+                        <h2 className="text-base font-black text-gray-800">Library</h2>
+                        <p className="text-xs text-gray-400 mt-1">ဓမ္မဂ္ဂန္ထ</p>
+                    </motion.div>
+                </Link>
+
+                <Link href="/nawin">
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col items-center text-center hover:border-gray-300 transition-colors relative"
+                    >
+                        {isClient && hasStarted && !isAllDone && (
+                            <span className="absolute top-3 right-3 text-[10px] font-bold text-gray-400">
+                                {completedCount}/81
+                            </span>
+                        )}
+                        <div className="w-11 h-11 rounded-xl bg-stone-100 flex items-center justify-center mb-3 text-stone-500">
+                            <Star size={22} />
+                        </div>
+                        <h2 className="text-base font-black text-gray-800">ကိုးနဝင်း</h2>
+                        <p className="text-xs text-gray-400 mt-1">Ko Nawin</p>
+                    </motion.div>
+                </Link>
+            </main>
+
+            <footer className="mt-10 text-center text-gray-300 text-xs">
+                © {new Date().getFullYear()} Dhamma Project
+            </footer>
+
+            <InstallPrompt />
+        </div>
+    );
 }
