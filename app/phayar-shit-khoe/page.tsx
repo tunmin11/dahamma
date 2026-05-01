@@ -27,7 +27,7 @@ export default function PhayarShitKhoePage() {
 
             <div className="lg:grid lg:grid-cols-[260px,1fr] lg:gap-12 lg:items-start max-w-7xl mx-auto">
                 {/* Desktop Sidebar */}
-                <aside className="hidden lg:block sticky top-8 h-[calc(100vh-4rem)] overflow-y-auto pr-4">
+                <aside className="hidden lg:block sticky top-8 h-[calc(100vh-4rem)] overflow-y-auto pr-4 bg-[#F0EEE9]">
                     <nav className="space-y-0.5">
                         <h3 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-4 px-3">
                             Contents
