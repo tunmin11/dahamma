@@ -44,7 +44,7 @@ export default function PhayarShitKhoePage() {
                     </nav>
                 </aside>
 
-                <main className="pb-32">
+                <main className="pb-32 z-100">
                     <div className="space-y-4">
                         {phayarShitKhoe.map((section, index) => (
                             <motion.div
