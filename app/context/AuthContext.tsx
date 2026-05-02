@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { onAuthStateChanged, User, GoogleAuthProvider, signInWithPopup, signOut, Auth } from "firebase/auth";
+import { GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, signOut, User } from "firebase/auth";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { auth } from "../firebase/config";
 
 interface AuthContextType {
@@ -30,7 +31,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
             return;
         }
         const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider);
+        signInWithRedirect(auth, provider);
     };
 
     const logOut = () => {
