@@ -25,7 +25,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     const googleSignIn = () => {
         // Check if auth is a valid instance (has currentUser property or similar internal struct)
         // or just check if our config initialization succeeded.
-        if (!auth || !autx`h.app) {
+        if (!auth || !auth.app) {
             console.warn("Firebase Auth not initialized. Check your environment variables.");
             return;
         }
