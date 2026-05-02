@@ -1,7 +1,6 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, signOut, User } from "firebase/auth";
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, User } from "firebase/auth";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { auth } from "../firebase/config";
 
@@ -26,12 +25,12 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     const googleSignIn = () => {
         // Check if auth is a valid instance (has currentUser property or similar internal struct)
         // or just check if our config initialization succeeded.
-        if (!auth || !auth.app) {
+        if (!auth || !autx`h.app) {
             console.warn("Firebase Auth not initialized. Check your environment variables.");
             return;
         }
         const provider = new GoogleAuthProvider();
-        signInWithRedirect(auth, provider);
+        signInWithPopup(auth, provider);
     };
 
     const logOut = () => {
