@@ -6,9 +6,10 @@ import { Sparkles, Trophy } from "lucide-react";
 interface NawinJourneyCompleteProps {
     journeyCount: number;
     onStartNew: () => void;
+    onViewPath: () => void;
 }
 
-export default function NawinJourneyComplete({ journeyCount, onStartNew }: NawinJourneyCompleteProps) {
+export default function NawinJourneyComplete({ journeyCount, onStartNew, onViewPath }: NawinJourneyCompleteProps) {
     return (
         <div className="w-full max-w-md mx-auto px-4 mt-10">
             <motion.div
@@ -33,6 +34,12 @@ export default function NawinJourneyComplete({ journeyCount, onStartNew }: Nawin
                         className="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white bg-gray-900 border-b-4 border-gray-700 hover:brightness-110 active:border-b-0 active:translate-y-1 transition-all"
                     >
                         Start New Journey
+                    </button>
+                    <button
+                        onClick={onViewPath}
+                        className="mt-4 text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors underline underline-offset-2"
+                    >
+                        View my completed path
                     </button>
                 </div>
             </motion.div>

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { arrayUnion, doc, getDoc, setDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { Bell, Check, Flame, LayoutGrid, Leaf, Lock, Route, Shield, Star, Trophy, X, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -24,6 +24,7 @@ export default function NawinPath() {
     const [selectedDay, setSelectedDay] = useState<NawinDayInfo | null>(null);
     const [viewMode, setViewMode] = useState<'path' | 'grid'>('path');
     const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
+    const [viewingCompletedPath, setViewingCompletedPath] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
@@ -155,10 +156,12 @@ export default function NawinPath() {
     };
 
     const handleStartNewJourney = () => {
-        const newLog = [...journeyLog, { completedAt: new Date().toISOString() }];
+        const newEntry = { completedAt: new Date().toISOString() };
+        const newLog = [...journeyLog, newEntry];
         setJourneyLog(newLog);
         setStartDate(null);
         setCompletedCells([]);
+        setViewingCompletedPath(false);
         localStorage.setItem("nawin_journeyLog", JSON.stringify(newLog));
         localStorage.removeItem("nawin_startDate");
         localStorage.removeItem("nawin_completedCells");
@@ -166,7 +169,7 @@ export default function NawinPath() {
         if (user) {
             setSyncStatus('syncing');
             setDoc(doc(db, "users", user.uid), {
-                nawinJourneyLog: newLog,
+                nawinJourneyLog: arrayUnion(newEntry),
                 nawinStartDate: null,
                 nawinCompleted: [],
                 updatedAt: new Date()
@@ -329,11 +332,12 @@ export default function NawinPath() {
     }
 
     // ── Journey complete screen ─────────────────────────────────────────────
-    if (isClient && startDate && completedCells.length === 81) {
+    if (isClient && startDate && completedCells.length === 81 && !viewingCompletedPath) {
         return (
             <NawinJourneyComplete
                 journeyCount={journeyLog.length + 1}
                 onStartNew={handleStartNewJourney}
+                onViewPath={() => setViewingCompletedPath(true)}
             />
         );
     }
