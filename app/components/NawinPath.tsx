@@ -186,9 +186,18 @@ export default function NawinPath() {
 
     const isCellUnlocked = (row: number, col: number) => {
         if (row === 1 && col === 1) return true;
-        if (col > 1) return completedCells.includes(getCellId(row, col - 1));
-        if (col === 1 && row > 1) return completedCells.includes(getCellId(row - 1, 9));
-        return false;
+
+        const sequentiallyUnlocked = col > 1
+            ? completedCells.includes(getCellId(row, col - 1))
+            : row > 1 && completedCells.includes(getCellId(row - 1, 9));
+        if (sequentiallyUnlocked) return true;
+
+        const cellDate = getCellDate(row, col);
+        if (!cellDate) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        cellDate.setHours(0, 0, 0, 0);
+        return cellDate <= today;
     };
 
     const handleCellClick = (row: number, col: number) => {
