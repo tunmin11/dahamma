@@ -1,8 +1,8 @@
 "use client";
 
 import { doc, getDoc } from "firebase/firestore";
-import { motion } from "framer-motion";
-import { Book, Leaf, Star } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Book, Leaf, Star, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import InstallPrompt from "./components/InstallPrompt";
@@ -10,11 +10,33 @@ import { useAuth } from "./context/AuthContext";
 import { db } from "./firebase/config";
 import { getNawinDayInfo } from "./utils/nawinLogic";
 
+const NAWIN_90_DAY_SCHEDULE: { no: string; dates: string; item: string; rounds: string }[] = [
+    { no: "၁", dates: "(၂၉.၇.၂၀၂၆) မှ (၆.၈.၂၀၂၆) အထိ", item: "အရဟံ", rounds: "၁" },
+    { no: "", dates: "", item: "သမ္မာသမ္ဗုဒ္ဓေါ", rounds: "၁" },
+    { no: "", dates: "", item: "ဝိဇ္ဇာစရဏသမ္ပန္နော", rounds: "၁" },
+    { no: "", dates: "", item: "သုဂတော", rounds: "၁" },
+    { no: "", dates: "", item: "လောကဝိဒူ", rounds: "၁" },
+    { no: "", dates: "", item: "အနုတ္တရော ပုရိသဒမ္မသာရထိ", rounds: "၁" },
+    { no: "", dates: "", item: "သတ္ထာဒေဝမနုဿာနံ", rounds: "၁" },
+    { no: "", dates: "", item: "ဗုဒ္ဓေါ", rounds: "၁" },
+    { no: "", dates: "", item: "ဘဂဝါ", rounds: "၁" },
+    { no: "၂", dates: "(၇.၈.၂၀၂၆) မှ (၁၅.၈.၂၀၂၆) အထိ", item: "အရဟံ သိဒ္ဓိ", rounds: "၉" },
+    { no: "၃", dates: "(၁၆.၈.၂၀၂၆) မှ (၂၄.၈.၂၀၂၆) အထိ", item: "သမ္မာသမ္ဗုဒ္ဓေါ သိဒ္ဓိ", rounds: "၉" },
+    { no: "၄", dates: "(၂၅.၈.၂၀၂၆) မှ (၂.၉.၂၀၂၆) အထိ", item: "ဝိဇ္ဇာစရဏသမ္ပန္နော သိဒ္ဓိ", rounds: "၉" },
+    { no: "၅", dates: "(၃.၉.၂၀၂၆) မှ (၁၁.၉.၂၀၂၆) အထိ", item: "သုဂတော သိဒ္ဓိ", rounds: "၉" },
+    { no: "၆", dates: "(၁၂.၉.၂၀၂၆) မှ (၂၀.၉.၂၀၂၆) အထိ", item: "လောကဝိဒူ သိဒ္ဓိ", rounds: "၉" },
+    { no: "၇", dates: "(၂၁.၉.၂၀၂၆) မှ (၂၉.၉.၂၀၂၆) အထိ", item: "အနုတ္တရော ပုရိသဒမ္မသာရထိ သိဒ္ဓိ", rounds: "၉" },
+    { no: "၈", dates: "(၃၀.၉.၂၀၂၆) မှ (၈.၁၀.၂၀၂၆) အထိ", item: "သတ္ထာဒေဝမနုဿာနံ သိဒ္ဓိ", rounds: "၉" },
+    { no: "၉", dates: "(၉.၁၀.၂၀၂၆) မှ (၁၇.၁၀.၂၀၂၆) အထိ", item: "ဗုဒ္ဓေါ သိဒ္ဓိ", rounds: "၉" },
+    { no: "၁၀", dates: "(၁၈.၁၀.၂၀၂၆) မှ (၂၆.၁၀.၂၀၂၆) အထိ", item: "ဘဂဝါ သိဒ္ဓိ", rounds: "၉" },
+];
+
 export default function Home() {
     const { user } = useAuth();
     const [completedCount, setCompletedCount] = useState(0);
     const [hasStarted, setHasStarted] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const [showScheduleModal, setShowScheduleModal] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
@@ -60,7 +82,65 @@ export default function Home() {
                 className="mb-10 text-center"
             >
                 <h1 className="text-3xl font-black mt-2 text-gray-800">ကိုးနဝင်း</h1>
+                <button
+                    onClick={() => setShowScheduleModal(true)}
+                    className="mt-3 inline-block max-w-full text-[11px] font-bold text-stone-600 bg-stone-100 hover:bg-stone-200 transition-colors px-3 py-1.5 rounded-full border border-stone-200 truncate"
+                >
+                    ဝါတွင်း(၃)လ ကိုးနဝင်းပုတီးရက်ပေါင်း (၉၀) အစီစဉ်
+                </button>
             </motion.header>
+
+            {/* ── 90-day schedule modal ─────────────────────────────────── */}
+            <AnimatePresence>
+                {showScheduleModal && (
+                    <div
+                        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
+                        onClick={() => setShowScheduleModal(false)}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 40 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white w-full sm:max-w-lg max-h-[85vh] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+                        >
+                            <div className="flex items-center justify-between gap-3 p-4 border-b border-gray-100 shrink-0">
+                                <h2 className="font-black text-sm text-gray-800">
+                                    ဝါတွင်း(၃)လ ကိုးနဝင်းပုတီးရက်ပေါင်း (၉၀) အစီစဉ်
+                                </h2>
+                                <button
+                                    onClick={() => setShowScheduleModal(false)}
+                                    className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 shrink-0"
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
+                            <div className="overflow-auto p-4">
+                                <table className="w-full text-xs border-collapse">
+                                    <thead>
+                                        <tr className="bg-gray-900 text-white">
+                                            <th className="p-2 text-left font-bold rounded-l-lg">စဉ်</th>
+                                            <th className="p-2 text-left font-bold">ပုတီးစိပ်ရမည့်ရက်</th>
+                                            <th className="p-2 text-left font-bold">စိပ်ရမည့်ဂုဏ်တော်</th>
+                                            <th className="p-2 text-left font-bold rounded-r-lg">ပတ်</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {NAWIN_90_DAY_SCHEDULE.map((row, i) => (
+                                            <tr key={i} className="border-b border-gray-100">
+                                                <td className="p-2 align-top text-gray-500">{row.no}</td>
+                                                <td className="p-2 align-top text-gray-600 whitespace-nowrap">{row.dates}</td>
+                                                <td className="p-2 align-top text-gray-800 font-semibold">{row.item}</td>
+                                                <td className="p-2 align-top text-gray-500">({row.rounds})</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* ── Next step card ─────────────────────────────────────────── */}
             {nextDayInfo && (
