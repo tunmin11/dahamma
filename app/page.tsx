@@ -116,7 +116,13 @@ export default function Home() {
                                 </button>
                             </div>
                             <div className="overflow-auto p-4">
-                                <table className="w-full text-xs border-collapse">
+                                <table className="w-full text-xs border-collapse table-fixed">
+                                    <colgroup>
+                                        <col className="w-[8%]" />
+                                        <col className="w-[22%]" />
+                                        <col className="w-[58%]" />
+                                        <col className="w-[12%]" />
+                                    </colgroup>
                                     <thead>
                                         <tr className="bg-gray-900 text-white">
                                             <th className="p-2 text-left font-bold rounded-l-lg">စဉ်</th>
@@ -129,8 +135,8 @@ export default function Home() {
                                         {NAWIN_90_DAY_SCHEDULE.map((row, i) => (
                                             <tr key={i} className="border-b border-gray-100">
                                                 <td className="p-2 align-top text-gray-500">{row.no}</td>
-                                                <td className="p-2 align-top text-gray-600 whitespace-nowrap">{row.dates}</td>
-                                                <td className="p-2 align-top text-gray-800 font-semibold">{row.item}</td>
+                                                <td className="p-2 align-top text-gray-600 break-words">{row.dates}</td>
+                                                <td className="p-2 align-top text-gray-800 font-semibold break-words">{row.item}</td>
                                                 <td className="p-2 align-top text-gray-500">({row.rounds})</td>
                                             </tr>
                                         ))}
