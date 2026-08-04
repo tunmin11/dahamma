@@ -23,22 +23,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Proxy Firebase Auth's OAuth handler pages through our own domain so we
-  // can use authDomain=9nawin.vercel.app instead of the default
-  // <project>.firebaseapp.com, which has no Firebase Hosting site deployed
-  // behind it (that domain 404s on /__/firebase/init.json).
-  async rewrites() {
-    return [
-      {
-        source: "/__/auth/:path*",
-        destination: "https://dhamma-universe.firebaseapp.com/__/auth/:path*",
-      },
-      {
-        source: "/__/firebase/:path*",
-        destination: "https://dhamma-universe.firebaseapp.com/__/firebase/:path*",
-      },
-    ];
-  },
 };
 
 export default withPWA(nextConfig);
