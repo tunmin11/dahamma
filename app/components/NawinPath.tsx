@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { arrayUnion, doc, getDoc, setDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { Bell, Check, Flame, LayoutGrid, Leaf, Lock, Route, Shield, Star, Trophy, X, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -10,25 +10,30 @@ import { useAuth } from "../context/AuthContext";
 import { nawinAttributes } from "../data/nawin";
 import { db } from "../firebase/config";
 import { NawinDayInfo, getNawinDayInfo } from "../utils/nawinLogic";
+import NawinJourneyComplete from "./NawinJourneyComplete";
 import ReminderSettings from "./ReminderSettings";
 
 export default function NawinPath() {
     const { user } = useAuth();
     const [completedCells, setCompletedCells] = useState<string[]>([]);
     const [startDate, setStartDate] = useState<string | null>(null);
+    const [journeyLog, setJourneyLog] = useState<{ completedAt: string }[]>([]);
     const [showReminder, setShowReminder] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [hasInitialScrolled, setHasInitialScrolled] = useState(false);
     const [selectedDay, setSelectedDay] = useState<NawinDayInfo | null>(null);
     const [viewMode, setViewMode] = useState<'path' | 'grid'>('path');
     const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
+    const [viewingCompletedPath, setViewingCompletedPath] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
         const savedCompleted = localStorage.getItem("nawin_completedCells");
         const savedDate = localStorage.getItem("nawin_startDate");
+        const savedJourneyLog = localStorage.getItem("nawin_journeyLog");
         if (savedCompleted) setCompletedCells(JSON.parse(savedCompleted));
         if (savedDate) setStartDate(savedDate);
+        if (savedJourneyLog) setJourneyLog(JSON.parse(savedJourneyLog));
     }, []);
 
     useEffect(() => {
@@ -48,15 +53,23 @@ export default function NawinPath() {
                             setStartDate(data.nawinStartDate);
                             localStorage.setItem("nawin_startDate", data.nawinStartDate);
                         }
+                        if (data.nawinJourneyLog) {
+                            setJourneyLog(data.nawinJourneyLog);
+                            localStorage.setItem("nawin_journeyLog", JSON.stringify(data.nawinJourneyLog));
+                        }
                     } else {
                         const localCompleted = completedCells.length > 0
                             ? completedCells
                             : JSON.parse(localStorage.getItem("nawin_completedCells") || "[]");
                         const localDate = startDate || localStorage.getItem("nawin_startDate");
-                        if (localCompleted.length > 0 || localDate) {
+                        const localJourneyLog = journeyLog.length > 0
+                            ? journeyLog
+                            : JSON.parse(localStorage.getItem("nawin_journeyLog") || "[]");
+                        if (localCompleted.length > 0 || localDate || localJourneyLog.length > 0) {
                             await setDoc(docRef, {
                                 nawinCompleted: localCompleted,
                                 nawinStartDate: localDate,
+                                nawinJourneyLog: localJourneyLog,
                                 updatedAt: new Date()
                             }, { merge: true });
                         }
@@ -142,13 +155,52 @@ export default function NawinPath() {
         }
     };
 
+    const handleStartNewJourney = () => {
+        const newEntry = { completedAt: new Date().toISOString() };
+        const newLog = [...journeyLog, newEntry];
+        setJourneyLog(newLog);
+        setStartDate(null);
+        setCompletedCells([]);
+        setViewingCompletedPath(false);
+        localStorage.setItem("nawin_journeyLog", JSON.stringify(newLog));
+        localStorage.removeItem("nawin_startDate");
+        localStorage.removeItem("nawin_completedCells");
+        setHasInitialScrolled(false);
+        if (user) {
+            setSyncStatus('syncing');
+            setDoc(doc(db, "users", user.uid), {
+                nawinJourneyLog: arrayUnion(newEntry),
+                nawinStartDate: null,
+                nawinCompleted: [],
+                updatedAt: new Date()
+            }, { merge: true })
+                .then(() => {
+                    setSyncStatus('success');
+                    setTimeout(() => setSyncStatus('idle'), 3000);
+                })
+                .catch((e: any) => {
+                    setSyncStatus('error');
+                    alert(`Save Failed: ${e.message}`);
+                });
+        }
+    };
+
     const getCellId = (row: number, col: number) => `${row}-${col}`;
 
     const isCellUnlocked = (row: number, col: number) => {
         if (row === 1 && col === 1) return true;
-        if (col > 1) return completedCells.includes(getCellId(row, col - 1));
-        if (col === 1 && row > 1) return completedCells.includes(getCellId(row - 1, 9));
-        return false;
+
+        const sequentiallyUnlocked = col > 1
+            ? completedCells.includes(getCellId(row, col - 1))
+            : row > 1 && completedCells.includes(getCellId(row - 1, 9));
+        if (sequentiallyUnlocked) return true;
+
+        const cellDate = getCellDate(row, col);
+        if (!cellDate) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        cellDate.setHours(0, 0, 0, 0);
+        return cellDate <= today;
     };
 
     const handleCellClick = (row: number, col: number) => {
@@ -268,9 +320,25 @@ export default function NawinPath() {
                                 <Star size={11} className="text-gray-500" />Stage Stars
                             </div>
                         </div>
+                        {journeyLog.length > 0 && (
+                            <p className="text-center text-xs font-bold text-gray-400 mt-4">
+                                You&apos;ve completed {journeyLog.length} journey{journeyLog.length > 1 ? "s" : ""} before
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
+        );
+    }
+
+    // ── Journey complete screen ─────────────────────────────────────────────
+    if (isClient && startDate && completedCells.length === 81 && !viewingCompletedPath) {
+        return (
+            <NawinJourneyComplete
+                journeyCount={journeyLog.length + 1}
+                onStartNew={handleStartNewJourney}
+                onViewPath={() => setViewingCompletedPath(true)}
+            />
         );
     }
 
