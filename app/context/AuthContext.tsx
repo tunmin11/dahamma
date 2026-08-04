@@ -1,6 +1,7 @@
 "use client";
 
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, User } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
+import { GoogleAuthProvider, getRedirectResult, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut, User } from "firebase/auth";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { auth } from "../firebase/config";
 
@@ -30,7 +31,25 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
             return;
         }
         const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider);
+
+        // Installed PWAs (manifest "display": "standalone") have no browser
+        // chrome to host a popup window, so signInWithPopup reliably fails
+        // there with auth/popup-blocked. Go straight to redirect in that case.
+        const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+        if (isStandalone) {
+            signInWithRedirect(auth, provider);
+            return;
+        }
+
+        signInWithPopup(auth, provider).catch((error: FirebaseError) => {
+            if (error.code === "auth/popup-blocked" || error.code === "auth/operation-not-supported-in-this-environment") {
+                signInWithRedirect(auth, provider);
+                return;
+            }
+            if (error.code !== "auth/popup-closed-by-user" && error.code !== "auth/cancelled-popup-request") {
+                console.error("Google sign-in failed:", error);
+            }
+        });
     };
 
     const logOut = () => {
@@ -52,6 +71,14 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
                 .then(() => console.log("🔐 Auth Persistence set to LOCAL"))
                 .catch((e) => console.error("Could not set auth persistence:", e));
         });
+
+        getRedirectResult(auth)
+            .then((result) => {
+                if (result) {
+                    console.log("✅ Redirect Sign-In Detected:", result.user.email);
+                }
+            })
+            .catch((error) => console.error("Redirect sign-in failed:", error));
 
         console.log("👀 Auth Context: Listening for state changes...");
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
