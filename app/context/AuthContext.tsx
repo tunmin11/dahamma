@@ -37,17 +37,17 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         // there with auth/popup-blocked. Go straight to redirect in that case.
         const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
         if (isStandalone) {
-            console.log("↪️ Standalone display mode detected, using signInWithRedirect.");
             signInWithRedirect(auth, provider);
             return;
         }
 
         signInWithPopup(auth, provider).catch((error: FirebaseError) => {
-            console.warn("⚠️ signInWithPopup failed:", error.code, error);
             if (error.code === "auth/popup-blocked" || error.code === "auth/operation-not-supported-in-this-environment") {
-                console.log("↪️ Falling back to signInWithRedirect.");
                 signInWithRedirect(auth, provider);
                 return;
+            }
+            if (error.code !== "auth/popup-closed-by-user" && error.code !== "auth/cancelled-popup-request") {
+                console.error("Google sign-in failed:", error);
             }
         });
     };
@@ -64,32 +64,9 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
             return;
         }
 
-        // Explicitly set persistence to LOCAL
-        // Note: This is usually default, but good to ensure.
-        import("firebase/auth").then(({ setPersistence, browserLocalPersistence }) => {
-            setPersistence(auth, browserLocalPersistence)
-                .then(() => console.log("🔐 Auth Persistence set to LOCAL"))
-                .catch((e) => console.error("Could not set auth persistence:", e));
-        });
+        getRedirectResult(auth).catch((error) => console.error("Redirect sign-in failed:", error));
 
-        getRedirectResult(auth)
-            .then((result) => {
-                if (result) {
-                    console.log("✅ Redirect Sign-In Detected:", result.user.email);
-                } else {
-                    console.log("ℹ️ getRedirectResult resolved with no pending redirect.");
-                }
-            })
-            .catch((error) => console.error("❌ Redirect sign-in failed:", error.code, error));
-
-        console.log("👀 Auth Context: Listening for state changes...");
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            // Log the user state change
-            if (currentUser) {
-                console.log("✅ User Sign-In Detected:", currentUser.email, currentUser.uid);
-            } else {
-                console.log("👋 User is currently signed out.");
-            }
             setUser(currentUser);
             setLoading(false);
         });
