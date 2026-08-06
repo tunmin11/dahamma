@@ -9,13 +9,14 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { nawinAttributes } from "../data/nawin";
 import { db } from "../firebase/config";
+import { NawinCompletedMap, normalizeNawinCompleted } from "../utils/nawinCompletedMap";
 import { NawinDayInfo, getNawinDayInfo } from "../utils/nawinLogic";
 import NawinJourneyComplete from "./NawinJourneyComplete";
 import ReminderSettings from "./ReminderSettings";
 
 export default function NawinPath() {
     const { user } = useAuth();
-    const [completedCells, setCompletedCells] = useState<string[]>([]);
+    const [completedCells, setCompletedCells] = useState<NawinCompletedMap>({});
     const [startDate, setStartDate] = useState<string | null>(null);
     const [journeyLog, setJourneyLog] = useState<{ completedAt: string }[]>([]);
     const [showReminder, setShowReminder] = useState(false);
@@ -31,7 +32,7 @@ export default function NawinPath() {
         const savedCompleted = localStorage.getItem("nawin_completedCells");
         const savedDate = localStorage.getItem("nawin_startDate");
         const savedJourneyLog = localStorage.getItem("nawin_journeyLog");
-        if (savedCompleted) setCompletedCells(JSON.parse(savedCompleted));
+        if (savedCompleted) setCompletedCells(normalizeNawinCompleted(JSON.parse(savedCompleted)));
         if (savedDate) setStartDate(savedDate);
         if (savedJourneyLog) setJourneyLog(JSON.parse(savedJourneyLog));
     }, []);
@@ -46,8 +47,9 @@ export default function NawinPath() {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
                         if (data.nawinCompleted) {
-                            setCompletedCells(data.nawinCompleted);
-                            localStorage.setItem("nawin_completedCells", JSON.stringify(data.nawinCompleted));
+                            const normalized = normalizeNawinCompleted(data.nawinCompleted);
+                            setCompletedCells(normalized);
+                            localStorage.setItem("nawin_completedCells", JSON.stringify(normalized));
                         }
                         if (data.nawinStartDate) {
                             setStartDate(data.nawinStartDate);
@@ -58,14 +60,14 @@ export default function NawinPath() {
                             localStorage.setItem("nawin_journeyLog", JSON.stringify(data.nawinJourneyLog));
                         }
                     } else {
-                        const localCompleted = completedCells.length > 0
+                        const localCompleted = Object.keys(completedCells).length > 0
                             ? completedCells
-                            : JSON.parse(localStorage.getItem("nawin_completedCells") || "[]");
+                            : normalizeNawinCompleted(JSON.parse(localStorage.getItem("nawin_completedCells") || "[]"));
                         const localDate = startDate || localStorage.getItem("nawin_startDate");
                         const localJourneyLog = journeyLog.length > 0
                             ? journeyLog
                             : JSON.parse(localStorage.getItem("nawin_journeyLog") || "[]");
-                        if (localCompleted.length > 0 || localDate || localJourneyLog.length > 0) {
+                        if (Object.keys(localCompleted).length > 0 || localDate || localJourneyLog.length > 0) {
                             await setDoc(docRef, {
                                 nawinCompleted: localCompleted,
                                 nawinStartDate: localDate,
@@ -91,7 +93,7 @@ export default function NawinPath() {
 
     useEffect(() => {
         if (isClient && !hasInitialScrolled) {
-            const totalCompleted = completedCells.length;
+            const totalCompleted = Object.keys(completedCells).length;
             const currentStage = Math.min(9, Math.floor(totalCompleted / 9) + 1);
             const timer = setTimeout(() => {
                 const element = document.getElementById(`stage-${currentStage}`);
@@ -132,7 +134,7 @@ export default function NawinPath() {
     const resetProgress = () => {
         if (confirm("Are you sure you want to reset your ritual? This cannot be undone.")) {
             setStartDate(null);
-            setCompletedCells([]);
+            setCompletedCells({});
             localStorage.removeItem("nawin_startDate");
             localStorage.removeItem("nawin_completedCells");
             setHasInitialScrolled(false);
@@ -140,7 +142,7 @@ export default function NawinPath() {
                 setSyncStatus('syncing');
                 setDoc(doc(db, "users", user.uid), {
                     nawinStartDate: null,
-                    nawinCompleted: [],
+                    nawinCompleted: {},
                     updatedAt: new Date()
                 }, { merge: true })
                     .then(() => {
@@ -160,7 +162,7 @@ export default function NawinPath() {
         const newLog = [...journeyLog, newEntry];
         setJourneyLog(newLog);
         setStartDate(null);
-        setCompletedCells([]);
+        setCompletedCells({});
         setViewingCompletedPath(false);
         localStorage.setItem("nawin_journeyLog", JSON.stringify(newLog));
         localStorage.removeItem("nawin_startDate");
@@ -191,8 +193,8 @@ export default function NawinPath() {
         if (row === 1 && col === 1) return true;
 
         const sequentiallyUnlocked = col > 1
-            ? completedCells.includes(getCellId(row, col - 1))
-            : row > 1 && completedCells.includes(getCellId(row - 1, 9));
+            ? getCellId(row, col - 1) in completedCells
+            : row > 1 && getCellId(row - 1, 9) in completedCells;
         if (sequentiallyUnlocked) return true;
 
         const cellDate = getCellDate(row, col);
@@ -215,8 +217,8 @@ export default function NawinPath() {
         const row = selectedDay.level;
         const col = ((selectedDay.day - 1) % 9) + 1;
         const cellId = getCellId(row, col);
-        if (!completedCells.includes(cellId)) {
-            const newCompleted = [...completedCells, cellId];
+        if (!(cellId in completedCells)) {
+            const newCompleted = { ...completedCells, [cellId]: new Date().toISOString() };
             setCompletedCells(newCompleted);
             localStorage.setItem("nawin_completedCells", JSON.stringify(newCompleted));
             if (user) {
@@ -226,7 +228,8 @@ export default function NawinPath() {
                 }, { merge: true }).catch((e) => console.error("❌ Failed to save:", e));
             }
         } else {
-            const newCompleted = completedCells.filter(id => id !== cellId);
+            const newCompleted = { ...completedCells };
+            delete newCompleted[cellId];
             setCompletedCells(newCompleted);
             localStorage.setItem("nawin_completedCells", JSON.stringify(newCompleted));
             if (user) {
@@ -260,7 +263,7 @@ export default function NawinPath() {
     };
 
     const totalSteps = 81;
-    const completedCount = completedCells.length;
+    const completedCount = Object.keys(completedCells).length;
     const progressPercentage = (completedCount / totalSteps) * 100;
 
     const getSelectedAttribute = () => {
@@ -281,7 +284,7 @@ export default function NawinPath() {
         for (let row = 1; row <= 9; row++) {
             for (let col = 1; col <= 9; col++) {
                 const cellId = getCellId(row, col);
-                if (isCellUnlocked(row, col) && !completedCells.includes(cellId)) return cellId;
+                if (isCellUnlocked(row, col) && !(cellId in completedCells)) return cellId;
             }
         }
         return null;
@@ -332,7 +335,7 @@ export default function NawinPath() {
     }
 
     // ── Journey complete screen ─────────────────────────────────────────────
-    if (isClient && startDate && completedCells.length === 81 && !viewingCompletedPath) {
+    if (isClient && startDate && Object.keys(completedCells).length === 81 && !viewingCompletedPath) {
         return (
             <NawinJourneyComplete
                 journeyCount={journeyLog.length + 1}
@@ -393,7 +396,7 @@ export default function NawinPath() {
                                 </div>
                             </div>
 
-                            {completedCells.includes(getCellId(selectedDay.level, ((selectedDay.day - 1) % 9) + 1)) ? (
+                            {getCellId(selectedDay.level, ((selectedDay.day - 1) % 9) + 1) in completedCells ? (
                                 <button
                                     onClick={handleDayComplete}
                                     className="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors border-2 border-transparent hover:border-red-100"
@@ -467,7 +470,7 @@ export default function NawinPath() {
             <div className={`space-y-4 flex flex-col-reverse relative ${viewMode === 'grid' ? 'hidden' : 'block'}`}>
                 {nawinAttributes.map((attr) => {
                     const stageCompleted = [...Array(9)].filter((_, i) =>
-                        completedCells.includes(getCellId(attr.id, i + 1))
+                        getCellId(attr.id, i + 1) in completedCells
                     ).length;
                     const stageStars = stageCompleted === 9 ? 3 : stageCompleted >= 6 ? 2 : stageCompleted >= 3 ? 1 : 0;
                     const TierIcon = attr.id <= 3 ? Shield : attr.id <= 6 ? Star : Trophy;
@@ -541,7 +544,7 @@ export default function NawinPath() {
                                     const col = i + 1;
                                     const pos = getNodePosition(i);
                                     const cellId = getCellId(attr.id, col);
-                                    const isDone = isClient && completedCells.includes(cellId);
+                                    const isDone = isClient && cellId in completedCells;
                                     const isUnlocked = isClient && isCellUnlocked(attr.id, col);
                                     const isCurrentActive = cellId === currentActiveCellId;
                                     const isVeggie = col === 5;
@@ -654,7 +657,7 @@ export default function NawinPath() {
                                     {[...Array(9)].map((_, i) => {
                                         const col = i + 1;
                                         const cellId = getCellId(attr.id, col);
-                                        const isDone = isClient && completedCells.includes(cellId);
+                                        const isDone = isClient && cellId in completedCells;
                                         const isUnlocked = isClient && isCellUnlocked(attr.id, col);
                                         const isVeggie = col === 5;
                                         const globalDay = ((attr.id - 1) * 9) + col;
